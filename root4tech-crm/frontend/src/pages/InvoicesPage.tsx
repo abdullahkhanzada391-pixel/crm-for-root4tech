@@ -84,6 +84,20 @@ export const InvoicesPage: React.FC = () => {
   const [notification, setNotification] = useState<string | null>(null);
   const [autoPrintAfterSave, setAutoPrintAfterSave] = useState(true);
 
+  // Table Row Action Dropdown Menu State
+  const [openActionDropdownId, setOpenActionDropdownId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest('.action-dropdown-container')) {
+        setOpenActionDropdownId(null);
+      }
+    };
+    document.addEventListener('click', handleOutsideClick);
+    return () => document.removeEventListener('click', handleOutsideClick);
+  }, []);
+
   // Undo Action History State
   interface UndoItem {
     id: string;
@@ -1632,109 +1646,167 @@ export const InvoicesPage: React.FC = () => {
                     </div>
                   </td>
                   <td className="py-3.5 px-4 text-right whitespace-nowrap">
-                    <div className="flex items-center justify-end gap-1">
-                      {/* Mark Paid / Unmark Revert */}
-                      {inv.status !== 'Paid' ? (
-                        <Tooltip content="Mark as Paid">
-                          <button
-                            onClick={() => handleMarkPaid(inv)}
-                            className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white border border-emerald-200 flex items-center justify-center transition shadow-2xs active:scale-95"
-                          >
-                            <Check className="w-4 h-4 stroke-[2.5]" />
-                          </button>
-                        </Tooltip>
-                      ) : (
-                        <Tooltip content="Revert payment back to Unpaid">
-                          <button
-                            onClick={() => {
-                              unmarkInvoiceAsPaid(inv.id);
-                              pushUndo({
-                                type: 'mark_paid',
-                                title: `Reverted "${inv.invoiceNumber}" to Unpaid`,
-                                invoice: inv
-                              });
-                              showToast(`Invoice "${inv.invoiceNumber}" reverted to Unpaid.`);
-                            }}
-                            className="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900 border border-slate-200 flex items-center justify-center transition shadow-2xs active:scale-95"
-                          >
-                            <RotateCcw className="w-3.5 h-3.5" />
-                          </button>
-                        </Tooltip>
-                      )}
-
-                      {/* Add / View Paid Invoice PDF button */}
-                      <Tooltip
-                        content={
-                          inv.paidPdfAttachment
-                            ? `Manage Attached PDF (${inv.paidPdfAttachment.name})`
-                            : 'Attach Paid Invoice PDF / Receipt'
-                        }
+                    <div className="relative inline-block text-left action-dropdown-container">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setOpenActionDropdownId(openActionDropdownId === inv.id ? null : inv.id);
+                        }}
+                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold transition shadow-2xs active:scale-95 ${
+                          openActionDropdownId === inv.id
+                            ? 'bg-blue-600 text-white border-blue-600 shadow-xs'
+                            : 'bg-white hover:bg-slate-50 text-slate-700 border-slate-200 hover:border-slate-300'
+                        }`}
                       >
-                        <button
-                          onClick={() => openPdfAttachmentModal(inv)}
-                          className={`w-8 h-8 rounded-lg flex items-center justify-center transition shadow-2xs active:scale-95 ${
-                            inv.paidPdfAttachment
-                              ? 'bg-emerald-100/90 text-emerald-800 hover:bg-emerald-200 border border-emerald-300'
-                              : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white border border-emerald-200'
+                        <span>Actions</span>
+                        <ChevronDown
+                          className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                            openActionDropdownId === inv.id ? 'rotate-180' : ''
                           }`}
-                        >
-                          {inv.paidPdfAttachment ? (
-                            <FileCheck className="w-4 h-4 text-emerald-700" />
-                          ) : (
-                            <UploadCloud className="w-4 h-4" />
-                          )}
-                        </button>
-                      </Tooltip>
+                        />
+                      </button>
 
-                      {/* Change Price / Discount */}
-                      <Tooltip content="Price & Discount Settings">
-                        <button
-                          onClick={() => openQuickPriceDiscountModal(inv)}
-                          className="w-8 h-8 rounded-lg bg-slate-50 text-slate-700 hover:bg-slate-100 hover:text-slate-900 border border-slate-200 flex items-center justify-center transition shadow-2xs active:scale-95"
+                      {openActionDropdownId === inv.id && (
+                        <div
+                          className="absolute right-0 mt-1.5 w-56 bg-white rounded-xl border border-slate-200 shadow-2xl z-50 py-1 text-xs text-slate-700 divide-y divide-slate-100 animate-in fade-in zoom-in-95 duration-100"
+                          onClick={(e) => e.stopPropagation()}
                         >
-                          <Tag className="w-3.5 h-3.5" />
-                        </button>
-                      </Tooltip>
+                          {/* 1. Preview & Studio */}
+                          <div className="py-1">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setViewingInvoice(inv);
+                                setOpenActionDropdownId(null);
+                              }}
+                              className="w-full text-left px-3.5 py-2 hover:bg-blue-50/70 hover:text-blue-700 flex items-center gap-2.5 font-medium transition"
+                            >
+                              <Eye className="w-4 h-4 text-blue-600" />
+                              <span>View Invoice Preview</span>
+                            </button>
 
-                      {/* Print Official Tax Invoice */}
-                      <Tooltip content="Print Official Tax Invoice">
-                        <button
-                          onClick={() => handlePrintInvoice(inv)}
-                          className="w-8 h-8 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white border border-blue-200 flex items-center justify-center transition shadow-2xs active:scale-95"
-                        >
-                          <Printer className="w-3.5 h-3.5" />
-                        </button>
-                      </Tooltip>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                handlePrintInvoice(inv);
+                                setOpenActionDropdownId(null);
+                              }}
+                              className="w-full text-left px-3.5 py-2 hover:bg-slate-50 flex items-center gap-2.5 font-medium text-slate-800 transition"
+                            >
+                              <Printer className="w-4 h-4 text-blue-600" />
+                              <span>Print Tax Invoice</span>
+                            </button>
 
-                      {/* Edit Invoice Details */}
-                      <Tooltip content="Edit Invoice Details">
-                        <button
-                          onClick={() => openEditModal(inv)}
-                          className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-700 hover:bg-indigo-600 hover:text-white border border-indigo-200 flex items-center justify-center transition shadow-2xs active:scale-95"
-                        >
-                          <Edit2 className="w-3.5 h-3.5" />
-                        </button>
-                      </Tooltip>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setSelectedDocInvoiceId(inv.id);
+                                setPageViewMode('document');
+                                setOpenActionDropdownId(null);
+                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                              }}
+                              className="w-full text-left px-3.5 py-2 hover:bg-slate-50 flex items-center gap-2.5 font-medium text-slate-800 transition"
+                            >
+                              <FileText className="w-4 h-4 text-indigo-600" />
+                              <span>Open in Studio Document</span>
+                            </button>
+                          </div>
 
-                      {/* View Document Preview */}
-                      <Tooltip content="View Document Preview">
-                        <button
-                          onClick={() => setViewingInvoice(inv)}
-                          className="w-8 h-8 rounded-lg bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-900 border border-slate-200 flex items-center justify-center transition shadow-2xs active:scale-95"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
-                      </Tooltip>
+                          {/* 2. Management & Attachments */}
+                          <div className="py-1">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                openEditModal(inv);
+                                setOpenActionDropdownId(null);
+                              }}
+                              className="w-full text-left px-3.5 py-2 hover:bg-slate-50 flex items-center gap-2.5 font-medium text-slate-800 transition"
+                            >
+                              <Edit2 className="w-4 h-4 text-indigo-600" />
+                              <span>Edit Invoice Details</span>
+                            </button>
 
-                      {/* Delete Invoice */}
-                      <Tooltip content="Delete Invoice">
-                        <button
-                          onClick={() => setInvoiceToDelete(inv)}
-                          className="w-8 h-8 rounded-lg bg-rose-50 text-rose-700 hover:bg-rose-600 hover:text-white border border-rose-200 flex items-center justify-center transition shadow-2xs active:scale-95"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </Tooltip>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                openQuickPriceDiscountModal(inv);
+                                setOpenActionDropdownId(null);
+                              }}
+                              className="w-full text-left px-3.5 py-2 hover:bg-slate-50 flex items-center gap-2.5 font-medium text-slate-800 transition"
+                            >
+                              <Tag className="w-4 h-4 text-amber-600" />
+                              <span>Change Price & Discount</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => {
+                                openPdfAttachmentModal(inv);
+                                setOpenActionDropdownId(null);
+                              }}
+                              className="w-full text-left px-3.5 py-2 hover:bg-slate-50 flex items-center gap-2.5 font-medium text-slate-800 transition"
+                            >
+                              {inv.paidPdfAttachment ? (
+                                <FileCheck className="w-4 h-4 text-emerald-600" />
+                              ) : (
+                                <UploadCloud className="w-4 h-4 text-emerald-600" />
+                              )}
+                              <span>{inv.paidPdfAttachment ? 'Manage Receipt PDF' : 'Attach Paid Receipt PDF'}</span>
+                            </button>
+                          </div>
+
+                          {/* 3. Mark Paid / Revert */}
+                          <div className="py-1">
+                            {inv.status !== 'Paid' ? (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  handleMarkPaid(inv);
+                                  setOpenActionDropdownId(null);
+                                }}
+                                className="w-full text-left px-3.5 py-2 hover:bg-emerald-50 text-emerald-800 flex items-center gap-2.5 font-medium transition"
+                              >
+                                <Check className="w-4 h-4 text-emerald-600 stroke-[2.5]" />
+                                <span>Mark as Paid</span>
+                              </button>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  unmarkInvoiceAsPaid(inv.id);
+                                  pushUndo({
+                                    type: 'mark_paid',
+                                    title: `Reverted "${inv.invoiceNumber}" to Unpaid`,
+                                    invoice: inv
+                                  });
+                                  showToast(`Invoice "${inv.invoiceNumber}" reverted to Unpaid.`);
+                                  setOpenActionDropdownId(null);
+                                }}
+                                className="w-full text-left px-3.5 py-2 hover:bg-slate-50 flex items-center gap-2.5 font-medium text-slate-700 transition"
+                              >
+                                <RotateCcw className="w-4 h-4 text-slate-500" />
+                                <span>Revert to Unpaid</span>
+                              </button>
+                            )}
+                          </div>
+
+                          {/* 4. Delete */}
+                          <div className="py-1">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setInvoiceToDelete(inv);
+                                setOpenActionDropdownId(null);
+                              }}
+                              className="w-full text-left px-3.5 py-2 hover:bg-rose-50 text-rose-700 flex items-center gap-2.5 font-medium transition"
+                            >
+                              <Trash2 className="w-4 h-4 text-rose-600" />
+                              <span>Delete Invoice</span>
+                            </button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </td>
                 </tr>
