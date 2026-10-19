@@ -1,0 +1,10 @@
+{
+  "buildCommand": "cd root4tech-crm/frontend && npm install && npm run build",
+  "outputDirectory": "root4tech-crm/frontend/dist",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
