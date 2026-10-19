@@ -70,10 +70,6 @@ export const InvoicesPage: React.FC = () => {
     }
   }, [searchParams]);
 
-  // View Mode: 'document' (matching reference invoice image) or 'list' (CRM table management)
-  const [pageViewMode, setPageViewMode] = useState<'document' | 'list'>('document');
-  const [selectedDocInvoiceId, setSelectedDocInvoiceId] = useState<string>('inv-12345');
-  const [docCurrency, setDocCurrency] = useState<string>('$');
 
   // Modals & Collapsible Section States
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -1141,21 +1137,6 @@ export const InvoicesPage: React.FC = () => {
     </form>
   );
 
-  const activeDocInvoice: Invoice =
-    invoices.find((i) => i.id === selectedDocInvoiceId) ||
-    invoices.find((i) => i.invoiceNumber === '12345') ||
-    invoices[0] || {
-      id: 'inv-fallback',
-      invoiceNumber: '12345',
-      clientName: 'Ketut Susilo',
-      companyName: 'Ketut Susilo Studio',
-      clientEmail: 'hello@reallygreatsite.com',
-      service: 'Creative Agency Services',
-      amount: 8798,
-      issueDate: '2022-06-25',
-      dueDate: '2022-07-25',
-      status: 'Paid'
-    };
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -1255,172 +1236,6 @@ export const InvoicesPage: React.FC = () => {
         </div>
       </div>
 
-      {/* VIEW MODE TABS: STUDIO INVOICE DOCUMENT VS CRM LIST */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-white p-2 rounded-2xl border border-slate-200/90 shadow-xs">
-        <div className="flex items-center gap-1.5">
-          <button
-            type="button"
-            onClick={() => setPageViewMode('document')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition shadow-xs ${
-              pageViewMode === 'document'
-                ? 'bg-blue-600 text-white shadow-blue-500/20'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-            }`}
-          >
-            <FileText className="w-4 h-4" />
-            <span>Studio Invoice Document</span>
-            <span
-              className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wide ${
-                pageViewMode === 'document' ? 'bg-white/20 text-white' : 'bg-blue-50 text-blue-700 border border-blue-200'
-              }`}
-            >
-              Image Layout
-            </span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setPageViewMode('list')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition ${
-              pageViewMode === 'list'
-                ? 'bg-slate-900 text-white shadow-xs'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-            }`}
-          >
-            <Receipt className="w-4 h-4" />
-            <span>CRM Invoices List ({invoices.length})</span>
-          </button>
-        </div>
-
-        {pageViewMode === 'document' && (
-          <div className="flex flex-wrap items-center gap-2">
-            {/* Quick Currency Switcher */}
-            <div className="flex items-center border border-slate-200 rounded-lg p-0.5 bg-slate-50">
-              {(['$', 'PKR '] as const).map((sym) => (
-                <button
-                  key={sym}
-                  type="button"
-                  onClick={() => setDocCurrency(sym)}
-                  className={`px-2.5 py-1 rounded text-xs font-bold transition ${
-                    docCurrency === sym
-                      ? 'bg-blue-600 text-white shadow-2xs'
-                      : 'text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  {sym.trim()}
-                </button>
-              ))}
-            </div>
-
-            {/* Print Button */}
-            <button
-              type="button"
-              onClick={() => window.print()}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs transition"
-              title="Print Invoice Document (Ctrl+P)"
-            >
-              <Printer className="w-3.5 h-3.5" />
-              <span>Print Invoice</span>
-            </button>
-          </div>
-        )}
-      </div>
-
-      {/* 1. DOCUMENT VIEW (STUDIO SHODWE DESIGN MATCHING USER IMAGE) */}
-      {pageViewMode === 'document' && (
-        <div className="space-y-4 animate-in fade-in duration-200">
-          {/* Document Top Bar */}
-          <div className="p-3.5 sm:p-4 rounded-2xl bg-white border border-slate-200/90 shadow-xs flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-            <div className="flex flex-wrap items-center gap-2.5">
-              <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">
-                Active Document:
-              </span>
-              <select
-                value={activeDocInvoice.id}
-                onChange={(e) => setSelectedDocInvoiceId(e.target.value)}
-                className="h-9 px-3 rounded-lg border border-slate-200 text-xs font-bold text-slate-900 bg-slate-50/80 hover:bg-slate-50 focus:outline-none focus:border-blue-600 cursor-pointer max-w-xs sm:max-w-md"
-              >
-                {invoices.map((inv) => (
-                  <option key={inv.id} value={inv.id}>
-                    {inv.invoiceNumber} — {inv.clientName} ({inv.currency || docCurrency}{inv.amount.toLocaleString()}) {inv.id === 'inv-12345' ? '★ Image Template' : ''}
-                  </option>
-                ))}
-              </select>
-
-              <span
-                className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${getStatusBadge(
-                  activeDocInvoice.status
-                )}`}
-              >
-                {activeDocInvoice.status}
-              </span>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-2">
-              {/* Mark as Paid / Unpaid */}
-              {activeDocInvoice.status !== 'Paid' ? (
-                <button
-                  type="button"
-                  onClick={() => handleMarkPaid(activeDocInvoice)}
-                  className="px-3 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs font-bold flex items-center gap-1.5 transition"
-                >
-                  <Check className="w-3.5 h-3.5" />
-                  <span>Mark Paid</span>
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => {
-                    unmarkInvoiceAsPaid(activeDocInvoice.id);
-                    pushUndo({
-                      type: 'mark_paid',
-                      title: `Reverted "${activeDocInvoice.invoiceNumber}" to Unpaid`,
-                      invoice: activeDocInvoice
-                    });
-                    showToast(`Invoice "${activeDocInvoice.invoiceNumber}" reverted to Unpaid.`);
-                  }}
-                  className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition"
-                >
-                  <RotateCcw className="w-3.5 h-3.5" />
-                  <span>Revert to Unpaid</span>
-                </button>
-              )}
-
-              {/* Edit Details */}
-              <button
-                type="button"
-                onClick={() => openEditModal(activeDocInvoice)}
-                className="px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-bold flex items-center gap-1.5 transition"
-              >
-                <Edit2 className="w-3.5 h-3.5" />
-                <span>Edit Details</span>
-              </button>
-
-              {/* Attach / Manage PDF */}
-              <button
-                type="button"
-                onClick={() => openPdfAttachmentModal(activeDocInvoice)}
-                className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition"
-              >
-                <UploadCloud className="w-3.5 h-3.5 text-slate-600" />
-                <span>{activeDocInvoice.paidPdfAttachment ? 'Receipt Attached' : 'Attach Receipt'}</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Document Stage */}
-          <div className="w-full flex justify-center py-6 sm:py-8 px-2 sm:px-6 bg-slate-200/50 rounded-3xl border border-slate-300/60 shadow-inner overflow-x-auto">
-            <StudioInvoiceDocument
-              invoice={activeDocInvoice}
-              currencySymbol={activeDocInvoice.currency || docCurrency}
-            />
-          </div>
-        </div>
-      )}
-
-      {/* 2. CRM MANAGEMENT LIST VIEW */}
-      {pageViewMode === 'list' && (
-        <div className="space-y-4 sm:space-y-6 animate-in fade-in duration-200">
           {/* DEDICATED ADD NEW INVOICE SECTION (ON-PAGE BUILDER) */}
           {isAddSectionOpen && (
         <div className="p-6 rounded-2xl bg-white border-2 border-indigo-200/80 shadow-md space-y-5 animate-in fade-in slide-in-from-top-3 duration-200">
@@ -1766,8 +1581,7 @@ export const InvoicesPage: React.FC = () => {
           </table>
         </div>
       </div>
-      </div>
-      )}
+
 
       {/* CREATE / EDIT INVOICE MODAL */}
       {isModalOpen && (
