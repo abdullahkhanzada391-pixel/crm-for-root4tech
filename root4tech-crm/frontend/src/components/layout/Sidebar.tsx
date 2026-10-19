@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { useCRM } from '@/context/CRMContext';
 import { useAuth } from '@/context/AuthContext';
+import { Root4TechLogo } from '@/components/common/Root4TechLogo';
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -106,21 +107,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <div className="flex flex-col h-full overflow-hidden">
           {/* Logo / Brand Header */}
           <div className="h-16 border-b border-slate-800/80 px-4 flex items-center justify-between bg-slate-900/40">
-            <div className="flex items-center gap-3 overflow-hidden group cursor-pointer">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-500 to-cyan-400 flex items-center justify-center text-white font-bold text-sm shadow-md shadow-blue-500/30 shrink-0 transition-transform duration-300 group-hover:scale-105">
-                R4
-              </div>
-              {!isCollapsed && (
-                <div className="min-w-0 transition-opacity duration-200">
-                  <div className="font-bold text-white text-base tracking-tight truncate flex items-center gap-1.5">
-                    <span>Root 4 Tech</span>
-                    <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
-                  </div>
-                  <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest">
-                    CRM Platform
-                  </div>
-                </div>
-              )}
+            <div className="flex items-center gap-3 overflow-hidden group cursor-pointer" onClick={() => navigate('/dashboard')}>
+              <Root4TechLogo size="md" showText={!isCollapsed} subtitle="CRM Platform" variant="dark" />
             </div>
 
             {/* Mobile close button */}

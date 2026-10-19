@@ -16,6 +16,8 @@ import {
   Calendar,
   ArrowRight
 } from 'lucide-react';
+import { Tooltip } from '@/components/common/Tooltip';
+import { Root4TechLogo } from '@/components/common/Root4TechLogo';
 
 export const SalesRecordsPage: React.FC = () => {
   const { salesRecords } = useCRM();
@@ -254,22 +256,23 @@ export const SalesRecordsPage: React.FC = () => {
                     </span>
                   </td>
                   <td className="py-3.5 px-4 text-right whitespace-nowrap">
-                    <div className="flex items-center justify-end gap-1.5">
-                      <button
-                        onClick={() => handlePrintSale(r)}
-                        title="Print this individual sale record separately"
-                        className="px-2.5 py-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white border border-blue-200 text-xs font-bold flex items-center gap-1.5 transition shadow-2xs active:scale-98"
-                      >
-                        <Printer className="w-3.5 h-3.5" />
-                        <span>Print Sale</span>
-                      </button>
-                      <button
-                        onClick={() => setViewingRecord(r)}
-                        title="View Official Payment Receipt"
-                        className="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition"
-                      >
-                        <Eye className="w-4 h-4" />
-                      </button>
+                    <div className="flex items-center justify-end gap-1">
+                      <Tooltip content="Print Sale Record">
+                        <button
+                          onClick={() => handlePrintSale(r)}
+                          className="w-8 h-8 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white border border-blue-200 flex items-center justify-center transition shadow-2xs active:scale-95"
+                        >
+                          <Printer className="w-3.5 h-3.5" />
+                        </button>
+                      </Tooltip>
+                      <Tooltip content="View Payment Receipt">
+                        <button
+                          onClick={() => setViewingRecord(r)}
+                          className="w-8 h-8 rounded-lg bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-900 border border-slate-200 flex items-center justify-center transition shadow-2xs active:scale-95"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </button>
+                      </Tooltip>
                     </div>
                   </td>
                 </tr>
@@ -322,16 +325,8 @@ export const SalesRecordsPage: React.FC = () => {
               {/* Header */}
               <div className="flex justify-between items-start border-b border-slate-200 pb-5">
                 <div>
-                  <div className="flex items-center gap-2 font-bold text-lg text-slate-900">
-                    <div className="w-7 h-7 rounded-lg bg-slate-900 text-white flex items-center justify-center text-xs font-bold">
-                      R4
-                    </div>
-                    Root 4 Tech
-                  </div>
-                  <p className="text-xs text-slate-500 mt-1">
-                    Software Development & Technology Operations
-                  </p>
-                  <p className="text-xs text-slate-400 font-mono">
+                  <Root4TechLogo size="lg" showText={true} subtitle="Software Development & Technology Operations" variant="print" />
+                  <p className="text-xs text-slate-400 font-mono mt-1">
                     NTN: 8492041-9 · billing@root4tech.com · www.root4tech.com
                   </p>
                 </div>

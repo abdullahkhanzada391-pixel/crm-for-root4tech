@@ -17,6 +17,7 @@ import {
   Globe,
   Briefcase
 } from 'lucide-react';
+import { Tooltip } from '@/components/common/Tooltip';
 
 export const ClientsPage: React.FC = () => {
   const { clients, addClient, updateClient, deleteClient } = useCRM();
@@ -225,35 +226,38 @@ export const ClientsPage: React.FC = () => {
                   </td>
                   <td className="py-3.5 px-4 text-right whitespace-nowrap">
                     <div className="flex items-center justify-end gap-1">
-                      <button
-                        onClick={() => navigate('/quotations')}
-                        title="Create Quotation"
-                        className="px-2 py-1 rounded-md bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 text-[11px] font-medium flex items-center gap-1 transition"
-                      >
-                        <FileText className="w-3.5 h-3.5" />
-                        <span>Quote</span>
-                      </button>
-                      <button
-                        onClick={() => setViewingClient(client)}
-                        title="View Details"
-                        className="p-1.5 rounded-md text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition"
-                      >
-                        <Eye className="w-3.5 h-3.5" />
-                      </button>
-                      <button
-                        onClick={() => openEditModal(client)}
-                        title="Edit Client"
-                        className="p-1.5 rounded-md text-slate-500 hover:text-blue-600 hover:bg-blue-50 transition"
-                      >
-                        <Edit2 className="w-3.5 h-3.5" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(client.id, client.name)}
-                        title="Delete Client"
-                        className="p-1.5 rounded-md text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
+                      <Tooltip content="Create Quotation for Client">
+                        <button
+                          onClick={() => navigate('/quotations')}
+                          className="w-8 h-8 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white border border-blue-200 flex items-center justify-center transition shadow-2xs active:scale-95"
+                        >
+                          <FileText className="w-3.5 h-3.5" />
+                        </button>
+                      </Tooltip>
+                      <Tooltip content="View Client Details">
+                        <button
+                          onClick={() => setViewingClient(client)}
+                          className="w-8 h-8 rounded-lg bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-900 border border-slate-200 flex items-center justify-center transition shadow-2xs active:scale-95"
+                        >
+                          <Eye className="w-3.5 h-3.5" />
+                        </button>
+                      </Tooltip>
+                      <Tooltip content="Edit Client">
+                        <button
+                          onClick={() => openEditModal(client)}
+                          className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-700 hover:bg-indigo-600 hover:text-white border border-indigo-200 flex items-center justify-center transition shadow-2xs active:scale-95"
+                        >
+                          <Edit2 className="w-3.5 h-3.5" />
+                        </button>
+                      </Tooltip>
+                      <Tooltip content="Delete Client">
+                        <button
+                          onClick={() => handleDelete(client.id, client.name)}
+                          className="w-8 h-8 rounded-lg bg-rose-50 text-rose-700 hover:bg-rose-600 hover:text-white border border-rose-200 flex items-center justify-center transition shadow-2xs active:scale-95"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </Tooltip>
                     </div>
                   </td>
                 </tr>

@@ -33,9 +33,12 @@ import {
   FileText,
   FileCheck,
   ExternalLink,
-  FileDown,
-  ChevronDown
+  ChevronDown,
+  Check
 } from 'lucide-react';
+import { Tooltip } from '@/components/common/Tooltip';
+import { Root4TechLogo } from '@/components/common/Root4TechLogo';
+import { StudioInvoiceDocument } from '@/components/invoices/StudioInvoiceDocument';
 
 export const InvoicesPage: React.FC = () => {
   const {
@@ -66,6 +69,11 @@ export const InvoicesPage: React.FC = () => {
       openAddModal();
     }
   }, [searchParams]);
+
+  // View Mode: 'document' (matching reference invoice image) or 'list' (CRM table management)
+  const [pageViewMode, setPageViewMode] = useState<'document' | 'list'>('document');
+  const [selectedDocInvoiceId, setSelectedDocInvoiceId] = useState<string>('inv-12345');
+  const [docCurrency, setDocCurrency] = useState<string>('$');
 
   // Modals & Collapsible Section States
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -1132,6 +1140,22 @@ export const InvoicesPage: React.FC = () => {
     </form>
   );
 
+  const activeDocInvoice: Invoice =
+    invoices.find((i) => i.id === selectedDocInvoiceId) ||
+    invoices.find((i) => i.invoiceNumber === '12345') ||
+    invoices[0] || {
+      id: 'inv-fallback',
+      invoiceNumber: '12345',
+      clientName: 'Ketut Susilo',
+      companyName: 'Ketut Susilo Studio',
+      clientEmail: 'hello@reallygreatsite.com',
+      service: 'Creative Agency Services',
+      amount: 8798,
+      issueDate: '2022-06-25',
+      dueDate: '2022-07-25',
+      status: 'Paid'
+    };
+
   return (
     <div className="space-y-4 sm:space-y-6">
       {/* Toast Notification with Inline Undo */}
@@ -1230,8 +1254,174 @@ export const InvoicesPage: React.FC = () => {
         </div>
       </div>
 
-      {/* DEDICATED ADD NEW INVOICE SECTION (ON-PAGE BUILDER) */}
-      {isAddSectionOpen && (
+      {/* VIEW MODE TABS: STUDIO INVOICE DOCUMENT VS CRM LIST */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-white p-2 rounded-2xl border border-slate-200/90 shadow-xs">
+        <div className="flex items-center gap-1.5">
+          <button
+            type="button"
+            onClick={() => setPageViewMode('document')}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition shadow-xs ${
+              pageViewMode === 'document'
+                ? 'bg-blue-600 text-white shadow-blue-500/20'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+            }`}
+          >
+            <FileText className="w-4 h-4" />
+            <span>Studio Invoice Document</span>
+            <span
+              className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wide ${
+                pageViewMode === 'document' ? 'bg-white/20 text-white' : 'bg-blue-50 text-blue-700 border border-blue-200'
+              }`}
+            >
+              Image Layout
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setPageViewMode('list')}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition ${
+              pageViewMode === 'list'
+                ? 'bg-slate-900 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+            }`}
+          >
+            <Receipt className="w-4 h-4" />
+            <span>CRM Invoices List ({invoices.length})</span>
+          </button>
+        </div>
+
+        {pageViewMode === 'document' && (
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Quick Currency Switcher */}
+            <div className="flex items-center border border-slate-200 rounded-lg p-0.5 bg-slate-50">
+              {(['$', 'PKR '] as const).map((sym) => (
+                <button
+                  key={sym}
+                  type="button"
+                  onClick={() => setDocCurrency(sym)}
+                  className={`px-2.5 py-1 rounded text-xs font-bold transition ${
+                    docCurrency === sym
+                      ? 'bg-blue-600 text-white shadow-2xs'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  {sym.trim()}
+                </button>
+              ))}
+            </div>
+
+            {/* Print Button */}
+            <button
+              type="button"
+              onClick={() => window.print()}
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs transition"
+              title="Print Invoice Document (Ctrl+P)"
+            >
+              <Printer className="w-3.5 h-3.5" />
+              <span>Print Invoice</span>
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* 1. DOCUMENT VIEW (STUDIO SHODWE DESIGN MATCHING USER IMAGE) */}
+      {pageViewMode === 'document' && (
+        <div className="space-y-4 animate-in fade-in duration-200">
+          {/* Document Top Bar */}
+          <div className="p-3.5 sm:p-4 rounded-2xl bg-white border border-slate-200/90 shadow-xs flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+            <div className="flex flex-wrap items-center gap-2.5">
+              <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">
+                Active Document:
+              </span>
+              <select
+                value={activeDocInvoice.id}
+                onChange={(e) => setSelectedDocInvoiceId(e.target.value)}
+                className="h-9 px-3 rounded-lg border border-slate-200 text-xs font-bold text-slate-900 bg-slate-50/80 hover:bg-slate-50 focus:outline-none focus:border-blue-600 cursor-pointer max-w-xs sm:max-w-md"
+              >
+                {invoices.map((inv) => (
+                  <option key={inv.id} value={inv.id}>
+                    {inv.invoiceNumber} — {inv.clientName} ({inv.currency || docCurrency}{inv.amount.toLocaleString()}) {inv.id === 'inv-12345' ? '★ Image Template' : ''}
+                  </option>
+                ))}
+              </select>
+
+              <span
+                className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${getStatusBadge(
+                  activeDocInvoice.status
+                )}`}
+              >
+                {activeDocInvoice.status}
+              </span>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2">
+              {/* Mark as Paid / Unpaid */}
+              {activeDocInvoice.status !== 'Paid' ? (
+                <button
+                  type="button"
+                  onClick={() => handleMarkPaid(activeDocInvoice)}
+                  className="px-3 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs font-bold flex items-center gap-1.5 transition"
+                >
+                  <Check className="w-3.5 h-3.5" />
+                  <span>Mark Paid</span>
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    unmarkInvoiceAsPaid(activeDocInvoice.id);
+                    pushUndo({
+                      type: 'mark_paid',
+                      title: `Reverted "${activeDocInvoice.invoiceNumber}" to Unpaid`,
+                      invoice: activeDocInvoice
+                    });
+                    showToast(`Invoice "${activeDocInvoice.invoiceNumber}" reverted to Unpaid.`);
+                  }}
+                  className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  <span>Revert to Unpaid</span>
+                </button>
+              )}
+
+              {/* Edit Details */}
+              <button
+                type="button"
+                onClick={() => openEditModal(activeDocInvoice)}
+                className="px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-bold flex items-center gap-1.5 transition"
+              >
+                <Edit2 className="w-3.5 h-3.5" />
+                <span>Edit Details</span>
+              </button>
+
+              {/* Attach / Manage PDF */}
+              <button
+                type="button"
+                onClick={() => openPdfAttachmentModal(activeDocInvoice)}
+                className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition"
+              >
+                <UploadCloud className="w-3.5 h-3.5 text-slate-600" />
+                <span>{activeDocInvoice.paidPdfAttachment ? 'Receipt Attached' : 'Attach Receipt'}</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Document Stage */}
+          <div className="w-full flex justify-center py-6 sm:py-8 px-2 sm:px-6 bg-slate-200/50 rounded-3xl border border-slate-300/60 shadow-inner overflow-x-auto">
+            <StudioInvoiceDocument
+              invoice={activeDocInvoice}
+              currencySymbol={activeDocInvoice.currency || docCurrency}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* 2. CRM MANAGEMENT LIST VIEW */}
+      {pageViewMode === 'list' && (
+        <div className="space-y-4 sm:space-y-6 animate-in fade-in duration-200">
+          {/* DEDICATED ADD NEW INVOICE SECTION (ON-PAGE BUILDER) */}
+          {isAddSectionOpen && (
         <div className="p-6 rounded-2xl bg-white border-2 border-indigo-200/80 shadow-md space-y-5 animate-in fade-in slide-in-from-top-3 duration-200">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-100 pb-4">
             <div className="flex items-center gap-3">
@@ -1442,104 +1632,109 @@ export const InvoicesPage: React.FC = () => {
                     </div>
                   </td>
                   <td className="py-3.5 px-4 text-right whitespace-nowrap">
-                    <div className="flex items-center justify-end gap-1.5">
+                    <div className="flex items-center justify-end gap-1">
                       {/* Mark Paid / Unmark Revert */}
                       {inv.status !== 'Paid' ? (
-                        <button
-                          onClick={() => handleMarkPaid(inv)}
-                          title="Record Payment for this Invoice"
-                          className="px-2.5 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white border border-emerald-200 text-xs font-semibold transition shadow-2xs"
-                        >
-                          Mark Paid
-                        </button>
+                        <Tooltip content="Mark as Paid">
+                          <button
+                            onClick={() => handleMarkPaid(inv)}
+                            className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white border border-emerald-200 flex items-center justify-center transition shadow-2xs active:scale-95"
+                          >
+                            <Check className="w-4 h-4 stroke-[2.5]" />
+                          </button>
+                        </Tooltip>
                       ) : (
-                        <button
-                          onClick={() => {
-                            unmarkInvoiceAsPaid(inv.id);
-                            pushUndo({
-                              type: 'mark_paid',
-                              title: `Reverted "${inv.invoiceNumber}" to Unpaid`,
-                              invoice: inv
-                            });
-                            showToast(`Invoice "${inv.invoiceNumber}" reverted to Unpaid.`);
-                          }}
-                          title="Revert payment back to Unpaid"
-                          className="px-2 py-1.5 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 text-[11px] font-medium transition"
-                        >
-                          Unmark
-                        </button>
+                        <Tooltip content="Revert payment back to Unpaid">
+                          <button
+                            onClick={() => {
+                              unmarkInvoiceAsPaid(inv.id);
+                              pushUndo({
+                                type: 'mark_paid',
+                                title: `Reverted "${inv.invoiceNumber}" to Unpaid`,
+                                invoice: inv
+                              });
+                              showToast(`Invoice "${inv.invoiceNumber}" reverted to Unpaid.`);
+                            }}
+                            className="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900 border border-slate-200 flex items-center justify-center transition shadow-2xs active:scale-95"
+                          >
+                            <RotateCcw className="w-3.5 h-3.5" />
+                          </button>
+                        </Tooltip>
                       )}
 
                       {/* Add / View Paid Invoice PDF button */}
-                      <button
-                        onClick={() => openPdfAttachmentModal(inv)}
-                        title={
+                      <Tooltip
+                        content={
                           inv.paidPdfAttachment
                             ? `Manage Attached PDF (${inv.paidPdfAttachment.name})`
-                            : 'Attach Paid Invoice PDF / Receipt document'
+                            : 'Attach Paid Invoice PDF / Receipt'
                         }
-                        className={`px-2.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 transition shadow-2xs ${
-                          inv.paidPdfAttachment
-                            ? 'bg-emerald-100/80 text-emerald-800 hover:bg-emerald-200 border border-emerald-300'
-                            : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white border border-emerald-200'
-                        }`}
                       >
-                        {inv.paidPdfAttachment ? (
-                          <>
-                            <FileCheck className="w-3.5 h-3.5 text-emerald-700" />
-                            <span>Paid PDF</span>
-                          </>
-                        ) : (
-                          <>
-                            <UploadCloud className="w-3.5 h-3.5" />
-                            <span>+ Paid PDF</span>
-                          </>
-                        )}
-                      </button>
+                        <button
+                          onClick={() => openPdfAttachmentModal(inv)}
+                          className={`w-8 h-8 rounded-lg flex items-center justify-center transition shadow-2xs active:scale-95 ${
+                            inv.paidPdfAttachment
+                              ? 'bg-emerald-100/90 text-emerald-800 hover:bg-emerald-200 border border-emerald-300'
+                              : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white border border-emerald-200'
+                          }`}
+                        >
+                          {inv.paidPdfAttachment ? (
+                            <FileCheck className="w-4 h-4 text-emerald-700" />
+                          ) : (
+                            <UploadCloud className="w-4 h-4" />
+                          )}
+                        </button>
+                      </Tooltip>
 
-                      <button
-                        onClick={() => openQuickPriceDiscountModal(inv)}
-                        title="Change price or apply discount to this invoice"
-                        className="px-2.5 py-1.5 rounded-lg bg-slate-50 text-slate-700 hover:bg-slate-100 hover:text-slate-900 border border-slate-200 text-xs font-bold flex items-center gap-1 transition shadow-2xs"
-                      >
-                        <Tag className="w-3.5 h-3.5" />
-                        <span>Price</span>
-                      </button>
+                      {/* Change Price / Discount */}
+                      <Tooltip content="Price & Discount Settings">
+                        <button
+                          onClick={() => openQuickPriceDiscountModal(inv)}
+                          className="w-8 h-8 rounded-lg bg-slate-50 text-slate-700 hover:bg-slate-100 hover:text-slate-900 border border-slate-200 flex items-center justify-center transition shadow-2xs active:scale-95"
+                        >
+                          <Tag className="w-3.5 h-3.5" />
+                        </button>
+                      </Tooltip>
 
-                      <button
-                        onClick={() => handlePrintInvoice(inv)}
-                        title="Print Official Tax Invoice"
-                        className="px-2.5 py-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white border border-blue-200 text-xs font-semibold flex items-center gap-1 transition shadow-2xs"
-                      >
-                        <Printer className="w-3.5 h-3.5" />
-                        <span>Print</span>
-                      </button>
+                      {/* Print Official Tax Invoice */}
+                      <Tooltip content="Print Official Tax Invoice">
+                        <button
+                          onClick={() => handlePrintInvoice(inv)}
+                          className="w-8 h-8 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white border border-blue-200 flex items-center justify-center transition shadow-2xs active:scale-95"
+                        >
+                          <Printer className="w-3.5 h-3.5" />
+                        </button>
+                      </Tooltip>
 
-                      <button
-                        onClick={() => openEditModal(inv)}
-                        title="Edit Invoice Details"
-                        className="px-2.5 py-1.5 rounded-lg bg-indigo-50 text-indigo-700 hover:bg-indigo-600 hover:text-white border border-indigo-200 text-xs font-bold flex items-center gap-1.5 transition shadow-2xs"
-                      >
-                        <Edit2 className="w-3.5 h-3.5" />
-                        <span>Edit</span>
-                      </button>
+                      {/* Edit Invoice Details */}
+                      <Tooltip content="Edit Invoice Details">
+                        <button
+                          onClick={() => openEditModal(inv)}
+                          className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-700 hover:bg-indigo-600 hover:text-white border border-indigo-200 flex items-center justify-center transition shadow-2xs active:scale-95"
+                        >
+                          <Edit2 className="w-3.5 h-3.5" />
+                        </button>
+                      </Tooltip>
 
-                      <button
-                        onClick={() => setViewingInvoice(inv)}
-                        title="View Document Preview"
-                        className="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition"
-                      >
-                        <Eye className="w-4 h-4" />
-                      </button>
+                      {/* View Document Preview */}
+                      <Tooltip content="View Document Preview">
+                        <button
+                          onClick={() => setViewingInvoice(inv)}
+                          className="w-8 h-8 rounded-lg bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-900 border border-slate-200 flex items-center justify-center transition shadow-2xs active:scale-95"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </button>
+                      </Tooltip>
 
-                      <button
-                        onClick={() => setInvoiceToDelete(inv)}
-                        title="Delete Invoice"
-                        className="px-2.5 py-1.5 rounded-lg bg-rose-50 text-rose-700 hover:bg-rose-600 hover:text-white border border-rose-200 text-xs font-semibold flex items-center gap-1 transition shadow-2xs"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                        <span>Delete</span>
-                      </button>
+                      {/* Delete Invoice */}
+                      <Tooltip content="Delete Invoice">
+                        <button
+                          onClick={() => setInvoiceToDelete(inv)}
+                          className="w-8 h-8 rounded-lg bg-rose-50 text-rose-700 hover:bg-rose-600 hover:text-white border border-rose-200 flex items-center justify-center transition shadow-2xs active:scale-95"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </Tooltip>
                     </div>
                   </td>
                 </tr>
@@ -1570,6 +1765,8 @@ export const InvoicesPage: React.FC = () => {
           </table>
         </div>
       </div>
+      </div>
+      )}
 
       {/* CREATE / EDIT INVOICE MODAL */}
       {isModalOpen && (
@@ -1648,22 +1845,30 @@ export const InvoicesPage: React.FC = () => {
 
       {/* VIEW & PRINT INVOICE MODAL */}
       {viewingInvoice && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-2xl p-6 sm:p-8 space-y-6 max-h-[92vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4">
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-4xl p-4 sm:p-6 space-y-4 max-h-[94vh] overflow-y-auto">
             {/* Action Bar */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-100 pb-4">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-                Official Tax Invoice Preview (PKR)
-              </span>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                  Official Invoice Document
+                </span>
+                <span className="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[10px] font-mono font-bold border border-blue-200">
+                  {viewingInvoice.invoiceNumber}
+                </span>
+                <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${getStatusBadge(viewingInvoice.status)}`}>
+                  {viewingInvoice.status}
+                </span>
+              </div>
               <div className="flex flex-wrap items-center gap-2">
                 {viewingInvoice.paidPdfAttachment && (
                   <button
                     onClick={() => handleDownloadAttachedPdf(viewingInvoice)}
-                    className="px-3 py-2 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs font-bold flex items-center gap-1.5 transition shadow-2xs"
+                    className="px-3 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs font-bold flex items-center gap-1.5 transition shadow-2xs"
                     title={`Download attached PDF: ${viewingInvoice.paidPdfAttachment.name}`}
                   >
                     <Download className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>Download Attached PDF</span>
+                    <span>Download Receipt</span>
                   </button>
                 )}
 
@@ -1672,7 +1877,7 @@ export const InvoicesPage: React.FC = () => {
                     const inv = viewingInvoice;
                     openPdfAttachmentModal(inv);
                   }}
-                  className="px-3 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition"
+                  className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition"
                   title="Upload or manage attached paid invoice PDF/receipt"
                 >
                   <UploadCloud className="w-3.5 h-3.5 text-slate-600" />
@@ -1685,7 +1890,7 @@ export const InvoicesPage: React.FC = () => {
                     setViewingInvoice(null);
                     openEditModal(inv);
                   }}
-                  className="px-3 py-2 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-bold flex items-center gap-1.5 transition"
+                  className="px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-bold flex items-center gap-1.5 transition"
                 >
                   <Edit2 className="w-3.5 h-3.5" />
                   <span>Edit</span>
@@ -1693,7 +1898,7 @@ export const InvoicesPage: React.FC = () => {
 
                 <button
                   onClick={() => window.print()}
-                  className={`px-4 py-2 rounded-lg text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition ${
+                  className={`px-4 py-1.5 rounded-lg text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition ${
                     viewingInvoice.status === 'Paid'
                       ? 'bg-emerald-600 hover:bg-emerald-700'
                       : 'bg-blue-600 hover:bg-blue-700'
@@ -1701,7 +1906,7 @@ export const InvoicesPage: React.FC = () => {
                   title={viewingInvoice.status === 'Paid' ? 'Print or Save Stamped Paid Invoice PDF' : 'Print Invoice'}
                 >
                   <Printer className="w-3.5 h-3.5" />
-                  <span>{viewingInvoice.status === 'Paid' ? 'Print / Save Paid PDF' : 'Print Invoice'}</span>
+                  <span>Print Invoice</span>
                 </button>
 
                 <button
@@ -1713,185 +1918,12 @@ export const InvoicesPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Printable Content */}
-            <div id="printableDocument" className="relative p-4 sm:p-6 bg-white space-y-6 text-slate-800 overflow-hidden">
-              {/* Official Paid Watermark Stamp */}
-              {viewingInvoice.status === 'Paid' && (
-                <div className="absolute right-6 top-16 z-10 pointer-events-none select-none">
-                  <div className="border-4 border-emerald-600/90 rounded-2xl px-5 py-2.5 rotate-[-12deg] bg-emerald-50/85 shadow-sm text-center">
-                    <div className="text-xl font-black tracking-widest text-emerald-700 uppercase font-mono">
-                      ★ PAID ★
-                    </div>
-                    <div className="text-[10px] font-bold text-emerald-800 tracking-tight font-mono">
-                      ROOT 4 TECH FINANCIALS
-                    </div>
-                    <div className="text-[9px] font-mono text-emerald-700">
-                      {viewingInvoice.paidDate || viewingInvoice.issueDate} · {viewingInvoice.paymentMethod || 'Bank Wire Transfer'}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Attached PDF Verification Banner */}
-              {viewingInvoice.paidPdfAttachment && (
-                <div className="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 text-xs text-emerald-900 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <FileCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-                    <span>Official Payment Receipt Attached: <strong>{viewingInvoice.paidPdfAttachment.name}</strong></span>
-                  </div>
-                  <span className="text-[11px] font-mono text-emerald-700">
-                    {(viewingInvoice.paidPdfAttachment.size / 1024).toFixed(1)} KB · Bank Verified
-                  </span>
-                </div>
-              )}
-              <div className="flex justify-between items-start border-b border-slate-200 pb-5">
-                <div>
-                  <div className="flex items-center gap-2 font-bold text-lg text-slate-900">
-                    <div className="w-7 h-7 rounded-lg bg-slate-900 text-white flex items-center justify-center text-xs font-bold">
-                      R4
-                    </div>
-                    Root 4 Tech
-                  </div>
-                  <p className="text-xs text-slate-500 mt-1">
-                    Software Development & Technology Operations
-                  </p>
-                  <p className="text-xs text-slate-400 font-mono">
-                    NTN: 8492041-9 · billing@root4tech.com · www.root4tech.com
-                  </p>
-                </div>
-                <div className="text-right">
-                  <h3 className="text-xl font-bold font-mono text-blue-600">
-                    INVOICE
-                  </h3>
-                  <div className="text-xs font-mono font-bold text-slate-900 mt-1">
-                    {viewingInvoice.invoiceNumber}
-                  </div>
-                  <span
-                    className={`inline-block mt-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${getStatusBadge(
-                      viewingInvoice.status
-                    )}`}
-                  >
-                    {viewingInvoice.status}
-                  </span>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4 text-xs">
-                <div>
-                  <span className="text-[11px] font-semibold text-slate-400 uppercase block">
-                    Billed To:
-                  </span>
-                  <div className="font-bold text-slate-900 text-sm mt-0.5">
-                    {viewingInvoice.companyName}
-                  </div>
-                  <div className="text-slate-600">{viewingInvoice.clientName}</div>
-                  {viewingInvoice.clientEmail && (
-                    <div className="text-slate-400 font-mono">{viewingInvoice.clientEmail}</div>
-                  )}
-                </div>
-                <div className="text-right space-y-1 text-xs">
-                  <div>
-                    <span className="text-slate-400">Date Issued: </span>
-                    <span className="font-semibold text-slate-800">{viewingInvoice.issueDate}</span>
-                  </div>
-                  <div>
-                    <span className="text-slate-400">Payment Due: </span>
-                    <span className="font-bold text-slate-900">{viewingInvoice.dueDate}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Items / Sections Table */}
-              <div className="border border-slate-200 rounded-lg overflow-hidden">
-                <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-[10px] tracking-wider font-semibold">
-                    <tr>
-                      <th className="py-2.5 px-4 w-12 text-center">#</th>
-                      <th className="py-2.5 px-4">Invoice Section & Scope Deliverables</th>
-                      <th className="py-2.5 px-4 text-right">Amount (PKR)</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100">
-                    {viewingInvoice.sections && viewingInvoice.sections.length > 0 ? (
-                      viewingInvoice.sections.map((sec, idx) => (
-                        <tr key={sec.id || idx}>
-                          <td className="py-3 px-4 font-mono text-slate-400 text-center font-bold">
-                            {idx + 1}
-                          </td>
-                          <td className="py-3 px-4">
-                            <div className="font-bold text-slate-900">{sec.title}</div>
-                            {sec.description && (
-                              <p className="text-[11px] text-slate-500 mt-0.5">{sec.description}</p>
-                            )}
-                          </td>
-                          <td className="py-3 px-4 text-right font-mono font-bold text-slate-900 text-xs whitespace-nowrap">
-                            PKR {sec.amount.toLocaleString()}
-                          </td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td className="py-3 px-4 font-mono text-slate-400 text-center font-bold">1</td>
-                        <td className="py-3 px-4 font-medium text-slate-900">
-                          {viewingInvoice.service}
-                        </td>
-                        <td className="py-3 px-4 text-right font-mono font-bold text-slate-900 text-sm whitespace-nowrap">
-                          PKR {viewingInvoice.amount.toLocaleString()}
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-
-              <div className="p-4 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-600 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                <div>
-                  <span className="font-semibold text-slate-800 block mb-0.5">Direct Wire / Online Transfer (PKR):</span>
-                  <p className="font-mono text-[11px] text-slate-600">
-                    Bank: Meezan Bank Ltd · Account: 0102-0105829101<br/>
-                    IBAN: PK36MEZN0001020105829101 · Currency: PKR
-                  </p>
-                </div>
-                <div className="text-right sm:text-right w-full sm:w-auto border-t sm:border-t-0 pt-2 sm:pt-0 space-y-1 font-mono">
-                  {viewingInvoice.discountAmount && viewingInvoice.discountAmount > 0 ? (
-                    <>
-                      <div className="text-xs text-slate-500 flex justify-between sm:justify-end gap-4">
-                        <span>Base Subtotal:</span>
-                        <span>PKR {(viewingInvoice.subtotal || (viewingInvoice.amount + viewingInvoice.discountAmount)).toLocaleString()}</span>
-                      </div>
-                      <div className="text-xs text-emerald-700 font-bold flex justify-between sm:justify-end gap-4">
-                        <span>Discount ({viewingInvoice.discountType === 'percentage' ? `${viewingInvoice.discountValue}%` : 'Corporate Special'}):</span>
-                        <span>-PKR {viewingInvoice.discountAmount.toLocaleString()}</span>
-                      </div>
-                      <div className="pt-1 border-t border-slate-200">
-                        <span className="text-xs text-slate-400 uppercase font-semibold block">Total Amount Due:</span>
-                        <div className="text-xl font-bold font-mono text-slate-900">
-                          PKR {viewingInvoice.amount.toLocaleString()}
-                        </div>
-                      </div>
-                    </>
-                  ) : (
-                    <div>
-                      <span className="text-xs text-slate-400 uppercase font-semibold">Total Amount Due:</span>
-                      <div className="text-xl font-bold font-mono text-slate-900">
-                        PKR {viewingInvoice.amount.toLocaleString()}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {viewingInvoice.notes && (
-                <div className="p-3 bg-slate-50 rounded-lg border border-slate-200 text-xs text-slate-600">
-                  <span className="font-semibold text-slate-700 block mb-0.5">Notes:</span>
-                  <p>{viewingInvoice.notes}</p>
-                </div>
-              )}
-
-              <div className="flex justify-between items-center border-t border-slate-200 pt-4 text-[11px] text-slate-400">
-                <span>Root 4 Tech — Enterprise Software & Cloud Infrastructure</span>
-                <span>Authorized Financial Department</span>
-              </div>
+            {/* Document Container */}
+            <div className="w-full flex justify-center py-2 bg-slate-100/70 p-2 sm:p-4 rounded-xl overflow-x-auto">
+              <StudioInvoiceDocument
+                invoice={viewingInvoice}
+                currencySymbol={viewingInvoice.currency || (viewingInvoice.id === 'inv-12345' || viewingInvoice.invoiceNumber === '12345' ? '$' : 'PKR ')}
+              />
             </div>
           </div>
         </div>

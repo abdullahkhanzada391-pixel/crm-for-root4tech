@@ -65,6 +65,8 @@ export interface InvoiceSection {
   title: string;
   description?: string;
   amount: number;
+  qty?: number;
+  price?: number;
 }
 
 export interface PaidInvoicePdfAttachment {
@@ -80,16 +82,29 @@ export interface Invoice {
   clientName: string;
   companyName: string;
   clientEmail?: string;
+  clientPhone?: string;
+  clientAddress?: string;
   service: string;
   amount: number; // Final payable amount after discount
   subtotal?: number; // Base subtotal before discount
   discountType?: 'percentage' | 'fixed';
   discountValue?: number; // e.g. 10 (%) or 5000 (PKR)
   discountAmount?: number; // Deducted amount in currency
+  taxRate?: number;
+  taxAmount?: number;
+  currency?: string;
   issueDate: string;
   dueDate: string;
   status: InvoiceStatus;
   paymentMethod?: string;
+  bankName?: string;
+  accountNumber?: string;
+  terms?: string;
+  signatoryName?: string;
+  signatoryTitle?: string;
+  companyBrandName?: string;
+  companySubtitle?: string;
+  companyWebsite?: string;
   notes?: string;
   sections?: InvoiceSection[];
   paidPdfAttachment?: PaidInvoicePdfAttachment;

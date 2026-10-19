@@ -8,6 +8,7 @@ import {
   ShieldCheck,
   AlertCircle
 } from 'lucide-react';
+import { Root4TechLogo } from '@/components/common/Root4TechLogo';
 
 export const LoginPage: React.FC = () => {
   const { login } = useAuth();
@@ -48,13 +49,7 @@ export const LoginPage: React.FC = () => {
       {/* Top Header */}
       <div className="max-w-7xl w-full mx-auto px-6 py-6 flex items-center justify-between relative z-10">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center font-black text-white text-lg shadow-lg shadow-blue-500/25">
-            R4
-          </div>
-          <div>
-            <h1 className="font-bold text-white text-base tracking-tight leading-none">Root 4 Tech</h1>
-            <p className="text-xs text-slate-400 mt-1">Enterprise CRM & Operational Portals</p>
-          </div>
+          <Root4TechLogo size="lg" showText={true} subtitle="Enterprise CRM & Operational Portals" variant="dark" />
         </div>
 
         <div className="hidden sm:flex items-center gap-2 text-xs text-slate-400 bg-slate-800/80 px-3.5 py-1.5 rounded-full border border-slate-700/60 backdrop-blur">

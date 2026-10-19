@@ -125,7 +125,18 @@ export const CRMProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const [invoices, setInvoices] = useState<Invoice[]>(() => {
     const saved = localStorage.getItem(`${STORAGE_PREFIX}invoices`);
-    return saved ? JSON.parse(saved) : INITIAL_INVOICES;
+    if (saved) {
+      try {
+        const parsed: Invoice[] = JSON.parse(saved);
+        if (Array.isArray(parsed) && !parsed.some((i) => i.id === 'inv-12345' || i.invoiceNumber === '12345')) {
+          return [INITIAL_INVOICES[0], ...parsed];
+        }
+        return parsed;
+      } catch {
+        return INITIAL_INVOICES;
+      }
+    }
+    return INITIAL_INVOICES;
   });
 
   const [salesRecords, setSalesRecords] = useState<SalesRecord[]>(() => {

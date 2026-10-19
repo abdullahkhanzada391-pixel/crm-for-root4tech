@@ -34,6 +34,7 @@ import {
   Filter,
   LogOut
 } from 'lucide-react';
+import { Root4TechLogo } from '@/components/common/Root4TechLogo';
 
 export const MarketingManagerDashboardPage: React.FC = () => {
   const {
@@ -1086,16 +1087,8 @@ export const MarketingManagerDashboardPage: React.FC = () => {
               {/* Slip Header */}
               <div className="border-b-2 border-slate-900 pb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-indigo-600 text-white font-extrabold flex items-center justify-center text-sm">
-                      R4T
-                    </div>
-                    <h2 className="text-2xl font-black text-slate-900 tracking-tight">ROOT 4 TECH</h2>
-                  </div>
+                  <Root4TechLogo size="lg" showText={true} subtitle="Software Development & Enterprise Marketing Solutions" variant="print" />
                   <p className="text-xs text-slate-500 mt-1">
-                    Software Development & Enterprise Marketing Solutions
-                  </p>
-                  <p className="text-xs text-slate-500">
                     Shahrah-e-Faisal, PECHS, Karachi, Pakistan • hr@root4tech.com
                   </p>
                 </div>

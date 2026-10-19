@@ -24,6 +24,7 @@ import {
   LogOut,
   LogIn
 } from 'lucide-react';
+import { Root4TechLogo } from '@/components/common/Root4TechLogo';
 
 export const SalesPersonPortalPage: React.FC = () => {
   const {
@@ -215,15 +216,7 @@ export const SalesPersonPortalPage: React.FC = () => {
       {/* Top Navbar for Sales Portal */}
       <header className="sticky top-0 z-40 bg-white border-b border-slate-200 px-4 sm:px-6 h-16 flex items-center justify-between shadow-xs">
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-blue-600 text-white font-bold text-xs flex items-center justify-center shadow-xs">
-              R4
-            </div>
-            <div>
-              <div className="font-bold text-sm text-slate-900 leading-tight">Root 4 Tech</div>
-              <div className="text-[11px] text-blue-600 font-semibold">Sales Representative Portal</div>
-            </div>
-          </div>
+          <Root4TechLogo size="md" showText={true} subtitle="Sales Representative Portal" variant="color" />
         </div>
 
         {/* Center/Right Shift Indicator & Admin Switcher */}
