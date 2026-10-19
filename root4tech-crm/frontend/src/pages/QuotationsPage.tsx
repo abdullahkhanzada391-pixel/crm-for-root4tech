@@ -19,8 +19,7 @@ import {
   Send,
   Calendar,
   Sparkles,
-  CheckSquare,
-  ChevronDown
+  CheckSquare
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Tooltip } from '@/components/common/Tooltip';
@@ -51,19 +50,6 @@ export const QuotationsPage: React.FC = () => {
   const [viewingQuote, setViewingQuote] = useState<Quotation | null>(null);
   const [notification, setNotification] = useState<string | null>(null);
 
-  // Table Row Action Dropdown Menu State
-  const [openActionDropdownId, setOpenActionDropdownId] = useState<string | null>(null);
-
-  useEffect(() => {
-    const handleOutsideClick = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      if (!target.closest('.action-dropdown-container')) {
-        setOpenActionDropdownId(null);
-      }
-    };
-    document.addEventListener('click', handleOutsideClick);
-    return () => document.removeEventListener('click', handleOutsideClick);
-  }, []);
 
   // Single Quotation Form State
   const [clientType, setClientType] = useState<'existing' | 'new'>('existing');
@@ -484,89 +470,41 @@ export const QuotationsPage: React.FC = () => {
                     </span>
                   </td>
                   <td className="py-3.5 px-4 text-right whitespace-nowrap">
-                    <div className="relative inline-block text-left action-dropdown-container">
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setOpenActionDropdownId(openActionDropdownId === q.id ? null : q.id);
-                        }}
-                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold transition shadow-2xs active:scale-95 ${
-                          openActionDropdownId === q.id
-                            ? 'bg-blue-600 text-white border-blue-600 shadow-xs'
-                            : 'bg-white hover:bg-slate-50 text-slate-700 border-slate-200 hover:border-slate-300'
-                        }`}
-                      >
-                        <span>Actions</span>
-                        <ChevronDown
-                          className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                            openActionDropdownId === q.id ? 'rotate-180' : ''
-                          }`}
-                        />
-                      </button>
-
-                      {openActionDropdownId === q.id && (
-                        <div
-                          className="absolute right-0 mt-1.5 w-56 bg-white rounded-xl border border-slate-200 shadow-2xl z-50 py-1 text-xs text-slate-700 divide-y divide-slate-100 animate-in fade-in zoom-in-95 duration-100"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <div className="py-1">
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setViewingQuote(q);
-                                setOpenActionDropdownId(null);
-                              }}
-                              className="w-full text-left px-3.5 py-2 hover:bg-blue-50/70 hover:text-blue-700 flex items-center gap-2.5 font-medium transition"
-                            >
-                              <Eye className="w-4 h-4 text-blue-600" />
-                              <span>View / Print Quotation</span>
-                            </button>
-
-                            <button
-                              type="button"
-                              onClick={() => {
-                                openEditModal(q);
-                                setOpenActionDropdownId(null);
-                              }}
-                              className="w-full text-left px-3.5 py-2 hover:bg-slate-50 flex items-center gap-2.5 font-medium text-slate-800 transition"
-                            >
-                              <Edit2 className="w-4 h-4 text-indigo-600" />
-                              <span>Edit Quotation Details</span>
-                            </button>
-                          </div>
-
-                          {q.status !== 'Accepted' && (
-                            <div className="py-1">
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  handleConvertToInvoice(q);
-                                  setOpenActionDropdownId(null);
-                                }}
-                                className="w-full text-left px-3.5 py-2 hover:bg-emerald-50 text-emerald-800 flex items-center gap-2.5 font-medium transition"
-                              >
-                                <CheckSquare className="w-4 h-4 text-emerald-600" />
-                                <span>Convert to Active Invoice</span>
-                              </button>
-                            </div>
-                          )}
-
-                          <div className="py-1">
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setQuoteToDelete(q);
-                                setOpenActionDropdownId(null);
-                              }}
-                              className="w-full text-left px-3.5 py-2 hover:bg-rose-50 text-rose-700 flex items-center gap-2.5 font-medium transition"
-                            >
-                              <Trash2 className="w-4 h-4 text-rose-600" />
-                              <span>Delete Quotation</span>
-                            </button>
-                          </div>
-                        </div>
+                    <div className="flex items-center justify-end gap-1.5">
+                      {q.status !== 'Accepted' && (
+                        <Tooltip content="Convert to Active Invoice">
+                          <button
+                            onClick={() => handleConvertToInvoice(q)}
+                            className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white border border-emerald-200 flex items-center justify-center transition shadow-2xs active:scale-95"
+                          >
+                            <CheckSquare className="w-4 h-4" />
+                          </button>
+                        </Tooltip>
                       )}
+                      <Tooltip content="Edit Quotation Details">
+                        <button
+                          onClick={() => openEditModal(q)}
+                          className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-700 hover:bg-indigo-600 hover:text-white border border-indigo-200 flex items-center justify-center transition shadow-2xs active:scale-95"
+                        >
+                          <Edit2 className="w-3.5 h-3.5" />
+                        </button>
+                      </Tooltip>
+                      <Tooltip content="View / Print Quotation">
+                        <button
+                          onClick={() => setViewingQuote(q)}
+                          className="w-8 h-8 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white border border-blue-200 flex items-center justify-center transition shadow-2xs active:scale-95"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </button>
+                      </Tooltip>
+                      <Tooltip content="Delete Quotation">
+                        <button
+                          onClick={() => setQuoteToDelete(q)}
+                          className="w-8 h-8 rounded-lg bg-rose-50 text-rose-700 hover:bg-rose-600 hover:text-white border border-rose-200 flex items-center justify-center transition shadow-2xs active:scale-95"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </Tooltip>
                     </div>
                   </td>
                 </tr>
