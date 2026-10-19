@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Root 4 Tech — Modern CRM</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            navy: {
+              900: '#0F172A',
+              800: '#1E293B',
+            },
+            brand: {
+              50: '#EFF6FF',
+              600: '#2563EB',
+              700: '#1D4ED8',
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body {
+      background-color: #F8FAFC;
+      color: #0F172A;
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #F1F5F9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94A3B8;
+    }
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printModalContent, #printModalContent * {
+        visibility: visible;
+      }
+      #printModalContent {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        background: white !important;
+        color: black !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex">
+
+  <!-- Mobile Backdrop -->
+  <div id="mobileBackdrop" class="fixed inset-0 bg-slate-900/50 z-40 hidden lg:hidden" onclick="toggleSidebar()"></div>
+
+  <!-- 1. FIXED LEFT SIDEBAR (7 Menu Items) -->
+  <aside id="sidebar" class="fixed left-0 top-0 h-full w-64 bg-white z-50 flex flex-col justify-between border-r border-slate-200 transition-all duration-300 -translate-x-full lg:translate-x-0 shadow-xs">
+    <div class="flex flex-col h-full overflow-hidden">
+      <!-- Logo Header -->
+      <div class="h-16 px-5 border-b border-slate-200 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-slate-900 to-blue-600 flex items-center justify-center text-white font-bold text-sm shadow-xs shrink-0">
+            R4
+          </div>
+          <div class="min-w-0">
+            <div class="font-bold text-slate-900 text-base tracking-tight truncate">
+              Root 4 Tech
+            </div>
+            <div class="text-[11px] font-medium text-slate-500 uppercase tracking-wider">
+              CRM Portal
+            </div>
+          </div>
+        </div>
+        <button onclick="toggleSidebar()" class="p-1 rounded-lg text-slate-400 hover:text-slate-600 lg:hidden">
+          <span class="material-symbols-outlined text-xl">close</span>
+        </button>
+      </div>
+
+      <!-- Navigation List (7 Items) -->
+      <div class="flex-1 overflow-y-auto px-3 py-4 space-y-1">
+        <span class="px-3 pb-2 block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+          Management
+        </span>
+        <nav class="space-y-1">
+          <!-- 1. Dashboard -->
+          <button onclick="navigateView('dashboard')" id="nav-dashboard" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold bg-blue-50 text-blue-600 transition">
+            <span class="material-symbols-outlined text-lg">dashboard</span>
+            <span>Dashboard</span>
+          </button>
+
+          <!-- 2. Leads -->
+          <button onclick="navigateView('leads')" id="nav-leads" class="nav-btn w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition">
+            <div class="flex items-center gap-3">
+              <span class="material-symbols-outlined text-lg">filter_alt</span>
+              <span>Leads</span>
+            </div>
+            <span id="badge-leads-count" class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-blue-100 text-blue-700">6</span>
+          </button>
+
+          <!-- 3. Clients -->
+          <button onclick="navigateView('clients')" id="nav-clients" class="nav-btn w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition">
+            <div class="flex items-center gap-3">
+              <span class="material-symbols-outlined text-lg">groups</span>
+              <span>Clients</span>
+            </div>
+            <span id="badge-clients-count" class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-700">5</span>
+          </button>
+
+          <!-- 4. Quotations -->
+          <button onclick="navigateView('quotations')" id="nav-quotations" class="nav-btn w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition">
+            <div class="flex items-center gap-3">
+              <span class="material-symbols-outlined text-lg">description</span>
+              <span>Quotations</span>
+            </div>
+            <span id="badge-quotes-count" class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-purple-100 text-purple-700">4</span>
+          </button>
+
+          <!-- 5. Invoices -->
+          <button onclick="navigateView('invoices')" id="nav-invoices" class="nav-btn w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition">
+            <div class="flex items-center gap-3">
+              <span class="material-symbols-outlined text-lg">receipt_long</span>
+              <span>Invoices</span>
+            </div>
+            <span id="badge-invoices-count" class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-amber-100 text-amber-700">5</span>
+          </button>
+
+          <!-- 6. Sales Records -->
+          <button onclick="navigateView('sales')" id="nav-sales" class="nav-btn w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition">
+            <div class="flex items-center gap-3">
+              <span class="material-symbols-outlined text-lg">payments</span>
+              <span>Sales Records</span>
+            </div>
+          </button>
+
+          <!-- 7. Settings -->
+          <button onclick="navigateView('settings')" id="nav-settings" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition">
+            <span class="material-symbols-outlined text-lg">settings</span>
+            <span>Settings</span>
+          </button>
+        </nav>
+      </div>
+
+      <!-- Admin Profile at Bottom -->
+      <div class="p-3 border-t border-slate-200 bg-slate-50/50">
+        <div class="flex items-center gap-3 p-2 rounded-lg">
+          <div class="relative shrink-0">
+            <div class="w-9 h-9 rounded-full bg-slate-900 text-white font-bold text-xs flex items-center justify-center shadow-xs">
+              AD
+            </div>
+            <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-white"></span>
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="text-xs font-semibold text-slate-900 truncate">Administrator</div>
+            <div class="text-[11px] text-slate-500 truncate">admin@root4tech.com</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Wrap -->
+  <div class="flex-1 flex flex-col lg:pl-64 min-h-screen">
+    <!-- Header -->
+    <header class="sticky top-0 z-30 h-16 bg-white border-b border-slate-200 px-4 sm:px-6 flex items-center justify-between shadow-xs">
+      <div class="flex items-center gap-3">
+        <button onclick="toggleSidebar()" class="p-2 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 lg:hidden">
+          <span class="material-symbols-outlined text-xl">menu</span>
+        </button>
+        <div>
+          <h1 id="pageHeaderTitle" class="text-base sm:text-lg font-bold text-slate-900 leading-tight">Dashboard</h1>
+          <p id="pageHeaderSubtitle" class="text-xs text-slate-500 hidden sm:block">Overview of leads, clients, and revenue</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-semibold">
+          <span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
+          <span>Admin Live</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Container Area -->
+    <main class="flex-1 p-4 sm:p-6 max-w-7xl w-full mx-auto space-y-6">
+
+      <!-- ========================================== -->
+      <!-- VIEW 1: DASHBOARD (Clean, Minimal, No Graphs) -->
+      <!-- ========================================== -->
+      <section id="view-dashboard" class="space-y-6">
+        <!-- 4 Summary Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- Total Leads -->
+          <div onclick="navigateView('leads')" class="p-5 rounded-xl bg-white border border-slate-200 shadow-xs hover:border-slate-300 hover:shadow-sm transition cursor-pointer">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Leads</span>
+              <div class="w-9 h-9 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+                <span class="material-symbols-outlined text-lg">filter_alt</span>
+              </div>
+            </div>
+            <div class="mt-3 flex items-baseline justify-between">
+              <span id="dash-leads-total" class="text-3xl font-bold text-slate-900">6</span>
+              <span class="text-xs text-blue-600 font-semibold">View Leads &rarr;</span>
+            </div>
+          </div>
+
+          <!-- Total Clients -->
+          <div onclick="navigateView('clients')" class="p-5 rounded-xl bg-white border border-slate-200 shadow-xs hover:border-slate-300 hover:shadow-sm transition cursor-pointer">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Clients</span>
+              <div class="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                <span class="material-symbols-outlined text-lg">groups</span>
+              </div>
+            </div>
+            <div class="mt-3 flex items-baseline justify-between">
+              <span id="dash-clients-total" class="text-3xl font-bold text-slate-900">5</span>
+              <span class="text-xs text-emerald-600 font-semibold">Directory &rarr;</span>
+            </div>
+          </div>
+
+          <!-- Total Quotations -->
+          <div onclick="navigateView('quotations')" class="p-5 rounded-xl bg-white border border-slate-200 shadow-xs hover:border-slate-300 hover:shadow-sm transition cursor-pointer">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Quotations</span>
+              <div class="w-9 h-9 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center">
+                <span class="material-symbols-outlined text-lg">description</span>
+              </div>
+            </div>
+            <div class="mt-3 flex items-baseline justify-between">
+              <span id="dash-quotes-total" class="text-3xl font-bold text-slate-900">4</span>
+              <span class="text-xs text-purple-600 font-semibold">Estimates &rarr;</span>
+            </div>
+          </div>
+
+          <!-- Total Invoices -->
+          <div onclick="navigateView('invoices')" class="p-5 rounded-xl bg-white border border-slate-200 shadow-xs hover:border-slate-300 hover:shadow-sm transition cursor-pointer">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Invoices</span>
+              <div class="w-9 h-9 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
+                <span class="material-symbols-outlined text-lg">receipt_long</span>
+              </div>
+            </div>
+            <div class="mt-3 flex items-baseline justify-between">
+              <span id="dash-invoices-total" class="text-3xl font-bold text-slate-900">5</span>
+              <span class="text-xs text-amber-600 font-semibold">Billing &rarr;</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Two Minimal Columns: Recent Leads & Recent Activities -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          <!-- Recent Leads (7 Cols) -->
+          <div class="lg:col-span-7 rounded-xl bg-white border border-slate-200 shadow-xs overflow-hidden">
+            <div class="p-4 sm:px-6 border-b border-slate-200 flex items-center justify-between bg-white">
+              <div>
+                <h2 class="text-sm sm:text-base font-bold text-slate-900">Recent Leads</h2>
+                <p class="text-xs text-slate-500">Latest prospective clients added to Root 4 Tech</p>
+              </div>
+              <button onclick="navigateView('leads')" class="text-xs font-semibold text-blue-600 hover:underline">View all</button>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase text-[11px] tracking-wider">
+                    <th class="py-3 px-4 sm:px-6">Lead Name</th>
+                    <th class="py-3 px-4">Company</th>
+                    <th class="py-3 px-4">Status</th>
+                    <th class="py-3 px-4 sm:px-6 text-right">Date Added</th>
+                  </tr>
+                </thead>
+                <tbody id="dash-recent-leads" class="divide-y divide-slate-100">
+                  <!-- Rendered via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Recent Activities (5 Cols) -->
+          <div class="lg:col-span-5 rounded-xl bg-white border border-slate-200 shadow-xs overflow-hidden">
+            <div class="p-4 sm:px-6 border-b border-slate-200 bg-white">
+              <h2 class="text-sm sm:text-base font-bold text-slate-900">Recent Activities</h2>
+              <p class="text-xs text-slate-500">Operational milestones and updates</p>
+            </div>
+            <div id="dash-recent-activities" class="p-4 sm:p-6 space-y-4">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ========================================== -->
+      <!-- VIEW 2: LEADS MANAGEMENT -->
+      <!-- ========================================== -->
+      <section id="view-leads" class="space-y-6 hidden">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 class="text-xl font-bold text-slate-900 tracking-tight">Leads Pipeline</h2>
+              <button onclick="toggleLeadHelpGuide()" class="text-xs text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200" title="Click for guide on adding and removing leads">
+                <span class="material-symbols-outlined text-sm">help</span>
+                <span>How it works</span>
+              </button>
+            </div>
+            <p class="text-xs text-slate-500 mt-0.5">Track, qualify, add new leads, or remove previous records</p>
+          </div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <button onclick="clearAllLeads()" class="flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-semibold shadow-xs transition" title="Delete all previous leads">
+              <span class="material-symbols-outlined text-sm">delete_sweep</span>
+              <span>Clear All Leads</span>
+            </button>
+            <button onclick="openAddLeadModal()" class="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-xs transition">
+              <span class="material-symbols-outlined text-sm">person_add</span>
+              <span>+ Add New Lead</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Help Guide Collapsible Box -->
+        <div id="leadHelpGuide" class="hidden p-4 rounded-xl bg-blue-50/70 border border-blue-200 text-slate-700 text-xs space-y-3">
+          <div class="flex items-center justify-between font-bold text-blue-900 text-sm">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-base text-blue-600">info</span>
+              <span>Quick Guide: Adding and Removing Leads</span>
+            </div>
+            <button onclick="toggleLeadHelpGuide()" class="text-slate-400 hover:text-slate-600">
+              <span class="material-symbols-outlined text-sm">close</span>
+            </button>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="p-3 bg-white rounded-lg border border-blue-100 shadow-xs space-y-1.5">
+              <div class="font-bold text-slate-900 flex items-center gap-1.5">
+                <span class="w-5 h-5 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-xs">1</span>
+                <span>How to Add a New Lead</span>
+              </div>
+              <p class="text-slate-600 text-[11px] leading-relaxed">
+                Click the blue <strong>"+ Add New Lead"</strong> button. Fill in the modal form (Full Name, Company, Phone, Email, Country, Service, Notes, and Status), then click <strong>"Save Lead"</strong>. It immediately appears at the top of your list.
+              </p>
+            </div>
+            <div class="p-3 bg-white rounded-lg border border-blue-100 shadow-xs space-y-1.5">
+              <div class="font-bold text-slate-900 flex items-center gap-1.5">
+                <span class="w-5 h-5 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center text-xs">2</span>
+                <span>How to Remove Previous Leads</span>
+              </div>
+              <ul class="text-slate-600 text-[11px] space-y-1 list-disc list-inside leading-relaxed">
+                <li><strong>Single Delete:</strong> Click the red <em>Delete</em> button on any lead's row.</li>
+                <li><strong>Bulk Delete:</strong> Check individual row checkboxes or the header checkbox, then click <em>"Delete Selected"</em> in the action bar.</li>
+                <li><strong>Clear All:</strong> Click the <em>"Clear All Leads"</em> button to wipe all previous lead records.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Floating Batch Action Bar when checkboxes selected -->
+        <div id="leadsBatchActionBar" class="hidden p-3 rounded-xl bg-slate-900 text-white flex items-center justify-between shadow-lg">
+          <div class="flex items-center gap-2 text-xs font-semibold">
+            <span class="material-symbols-outlined text-sm text-blue-400">check_circle</span>
+            <span id="leadsSelectedCountText">0 leads selected</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="deselectAllLeads()" class="px-2.5 py-1 rounded-md text-xs text-slate-300 hover:text-white hover:bg-slate-800 transition">Cancel</button>
+            <button onclick="deleteSelectedLeads()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold shadow-xs transition">
+              <span class="material-symbols-outlined text-sm">delete</span>
+              <span>Delete Selected</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter & Search Toolbar -->
+        <div class="p-3.5 rounded-xl bg-white border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-3">
+          <div class="flex flex-wrap items-center gap-1.5" id="leadFilterGroup">
+            <button onclick="filterLeadsByStatus('all')" class="lead-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white shadow-xs" data-status="all">All (<span id="count-all-leads">6</span>)</button>
+            <button onclick="filterLeadsByStatus('New')" class="lead-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900" data-status="New">New</button>
+            <button onclick="filterLeadsByStatus('Contacted')" class="lead-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900" data-status="Contacted">Contacted</button>
+            <button onclick="filterLeadsByStatus('Interested')" class="lead-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900" data-status="Interested">Interested</button>
+            <button onclick="filterLeadsByStatus('Converted')" class="lead-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900" data-status="Converted">Converted</button>
+          </div>
+          <div class="relative w-full sm:w-72">
+            <span class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-base">search</span>
+            <input type="text" id="leadSearchInput" oninput="renderLeadsTable()" placeholder="Search leads, company, country..." class="w-full h-9 pl-9 pr-3 rounded-lg border border-slate-200 bg-slate-50/50 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-blue-600 transition"/>
+          </div>
+        </div>
+
+        <!-- Complete Leads Table -->
+        <div class="rounded-xl bg-white border border-slate-200 shadow-xs overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold uppercase text-[11px] tracking-wider">
+                  <th class="py-3.5 px-4 w-10 text-center">
+                    <input type="checkbox" id="leadSelectAllCheckbox" onchange="toggleSelectAllLeads(this.checked)" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer" />
+                  </th>
+                  <th class="py-3.5 px-4 font-semibold">Lead Name</th>
+                  <th class="py-3.5 px-4 font-semibold">Company</th>
+                  <th class="py-3.5 px-4 font-semibold">Phone</th>
+                  <th class="py-3.5 px-4 font-semibold">Email</th>
+                  <th class="py-3.5 px-4 font-semibold">Country</th>
+                  <th class="py-3.5 px-4 font-semibold">Interested Service</th>
+                  <th class="py-3.5 px-4 font-semibold">Status</th>
+                  <th class="py-3.5 px-4 font-semibold">Date Added</th>
+                  <th class="py-3.5 px-4 font-semibold text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="leadsTableBody" class="divide-y divide-slate-100">
+                <!-- Rendered via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ========================================== -->
+      <!-- VIEW 3: CLIENTS MANAGEMENT -->
+      <!-- ========================================== -->
+      <section id="view-clients" class="space-y-6 hidden">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h2 class="text-xl font-bold text-slate-900 tracking-tight">Clients Management</h2>
+            <p class="text-xs text-slate-500 mt-0.5">Active customer accounts, service retainers, and directory</p>
+          </div>
+          <button onclick="openAddClientModal()" class="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-xs transition">
+            <span class="material-symbols-outlined text-sm">person_add</span>
+            <span>Add Client</span>
+          </button>
+        </div>
+
+        <div class="p-3.5 rounded-xl bg-white border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-3">
+          <div class="flex flex-wrap items-center gap-1.5" id="clientFilterGroup">
+            <button onclick="filterClientsByStatus('all')" class="client-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white shadow-xs" data-status="all">All (<span id="count-all-clients">5</span>)</button>
+            <button onclick="filterClientsByStatus('Active')" class="client-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900" data-status="Active">Active</button>
+            <button onclick="filterClientsByStatus('Onboarding')" class="client-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900" data-status="Onboarding">Onboarding</button>
+          </div>
+          <div class="relative w-full sm:w-72">
+            <span class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-base">search</span>
+            <input type="text" id="clientSearchInput" oninput="renderClientsTable()" placeholder="Search client, company, country..." class="w-full h-9 pl-9 pr-3 rounded-lg border border-slate-200 bg-slate-50/50 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-blue-600 transition"/>
+          </div>
+        </div>
+
+        <div class="rounded-xl bg-white border border-slate-200 shadow-xs overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold uppercase text-[11px] tracking-wider">
+                  <th class="py-3.5 px-4 font-semibold">Client Name</th>
+                  <th class="py-3.5 px-4 font-semibold">Company Name</th>
+                  <th class="py-3.5 px-4 font-semibold">Phone</th>
+                  <th class="py-3.5 px-4 font-semibold">Email</th>
+                  <th class="py-3.5 px-4 font-semibold">Country</th>
+                  <th class="py-3.5 px-4 font-semibold">Service</th>
+                  <th class="py-3.5 px-4 font-semibold">Status</th>
+                  <th class="py-3.5 px-4 font-semibold text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="clientsTableBody" class="divide-y divide-slate-100">
+                <!-- Rendered via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ========================================== -->
+      <!-- VIEW 4: QUOTATIONS -->
+      <!-- ========================================== -->
+      <section id="view-quotations" class="space-y-6 hidden">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h2 class="text-xl font-bold text-slate-900 tracking-tight">Commercial Quotations</h2>
+            <p class="text-xs text-slate-500 mt-0.5">Manage project proposals, cost estimates, and client contracts</p>
+          </div>
+          <button onclick="openAddQuoteModal()" class="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-xs transition">
+            <span class="material-symbols-outlined text-sm">add</span>
+            <span>Create Quotation</span>
+          </button>
+        </div>
+
+        <div class="p-3.5 rounded-xl bg-white border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-3">
+          <div class="relative w-full sm:w-72">
+            <span class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-base">search</span>
+            <input type="text" id="quoteSearchInput" oninput="renderQuotationsTable()" placeholder="Search quote #, company, service..." class="w-full h-9 pl-9 pr-3 rounded-lg border border-slate-200 bg-slate-50/50 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-blue-600 transition"/>
+          </div>
+        </div>
+
+        <div class="rounded-xl bg-white border border-slate-200 shadow-xs overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold uppercase text-[11px] tracking-wider">
+                  <th class="py-3.5 px-4 font-semibold">Quote #</th>
+                  <th class="py-3.5 px-4 font-semibold">Client / Company</th>
+                  <th class="py-3.5 px-4 font-semibold">Scope of Service</th>
+                  <th class="py-3.5 px-4 font-semibold">Date Issued</th>
+                  <th class="py-3.5 px-4 font-semibold">Valid Until</th>
+                  <th class="py-3.5 px-4 font-semibold">Amount (PKR)</th>
+                  <th class="py-3.5 px-4 font-semibold">Status</th>
+                  <th class="py-3.5 px-4 font-semibold text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="quotationsTableBody" class="divide-y divide-slate-100">
+                <!-- Rendered via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ========================================== -->
+      <!-- VIEW 5: INVOICES -->
+      <!-- ========================================== -->
+      <section id="view-invoices" class="space-y-6 hidden">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h2 class="text-xl font-bold text-slate-900 tracking-tight">Customer Invoices</h2>
+            <p class="text-xs text-slate-500 mt-0.5">Billing receivables, payment statuses, and invoice generation</p>
+          </div>
+          <button onclick="openAddInvoiceModal()" class="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-xs transition">
+            <span class="material-symbols-outlined text-sm">add</span>
+            <span>Issue Invoice</span>
+          </button>
+        </div>
+
+        <div class="p-3.5 rounded-xl bg-white border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-3">
+          <div class="relative w-full sm:w-72">
+            <span class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-base">search</span>
+            <input type="text" id="invoiceSearchInput" oninput="renderInvoicesTable()" placeholder="Search invoice #, company, service..." class="w-full h-9 pl-9 pr-3 rounded-lg border border-slate-200 bg-slate-50/50 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-blue-600 transition"/>
+          </div>
+        </div>
+
+        <div class="rounded-xl bg-white border border-slate-200 shadow-xs overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold uppercase text-[11px] tracking-wider">
+                  <th class="py-3.5 px-4 font-semibold">Invoice #</th>
+                  <th class="py-3.5 px-4 font-semibold">Client / Company</th>
+                  <th class="py-3.5 px-4 font-semibold">Service Description</th>
+                  <th class="py-3.5 px-4 font-semibold">Issue Date</th>
+                  <th class="py-3.5 px-4 font-semibold">Due Date</th>
+                  <th class="py-3.5 px-4 font-semibold">Amount (PKR)</th>
+                  <th class="py-3.5 px-4 font-semibold">Status</th>
+                  <th class="py-3.5 px-4 font-semibold text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="invoicesTableBody" class="divide-y divide-slate-100">
+                <!-- Rendered via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ========================================== -->
+      <!-- VIEW 6: SALES RECORDS -->
+      <!-- ========================================== -->
+      <section id="view-sales" class="space-y-6 hidden">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h2 class="text-xl font-bold text-slate-900 tracking-tight">Sales & Revenue Records</h2>
+            <p class="text-xs text-slate-500 mt-0.5">Historical log of settled commercial payments and reconciled sales</p>
+          </div>
+          <button onclick="window.print()" class="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-xs transition">
+            <span class="material-symbols-outlined text-sm">print</span>
+            <span>Print Sales Report</span>
+          </button>
+        </div>
+
+        <!-- Sales KPI Summary Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="p-4 rounded-xl bg-white border border-slate-200 shadow-xs">
+            <span class="text-xs font-semibold uppercase text-slate-500 tracking-wider">Total Realized Revenue</span>
+            <div id="sales-kpi-total" class="text-2xl font-bold text-emerald-600 mt-1 font-mono">PKR 102,500</div>
+          </div>
+          <div class="p-4 rounded-xl bg-white border border-slate-200 shadow-xs">
+            <span class="text-xs font-semibold uppercase text-slate-500 tracking-wider">Settled Invoices</span>
+            <div id="sales-kpi-count" class="text-2xl font-bold text-slate-900 mt-1 font-mono">4 Completed</div>
+          </div>
+          <div class="p-4 rounded-xl bg-white border border-slate-200 shadow-xs">
+            <span class="text-xs font-semibold uppercase text-slate-500 tracking-wider">Avg Transaction Value</span>
+            <div id="sales-kpi-avg" class="text-2xl font-bold text-blue-600 mt-1 font-mono">PKR 25,625</div>
+          </div>
+        </div>
+
+        <div class="rounded-xl bg-white border border-slate-200 shadow-xs overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold uppercase text-[11px] tracking-wider">
+                  <th class="py-3.5 px-4 font-semibold">Record ID</th>
+                  <th class="py-3.5 px-4 font-semibold">Invoice Ref</th>
+                  <th class="py-3.5 px-4 font-semibold">Company / Client</th>
+                  <th class="py-3.5 px-4 font-semibold">Service</th>
+                  <th class="py-3.5 px-4 font-semibold">Amount Paid (PKR)</th>
+                  <th class="py-3.5 px-4 font-semibold">Date Settled</th>
+                  <th class="py-3.5 px-4 font-semibold text-right">Payment Method</th>
+                </tr>
+              </thead>
+              <tbody id="salesTableBody" class="divide-y divide-slate-100">
+                <!-- Rendered via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ========================================== -->
+      <!-- VIEW 7: SETTINGS -->
+      <!-- ========================================== -->
+      <section id="view-settings" class="space-y-6 max-w-4xl hidden">
+        <div>
+          <h2 class="text-xl font-bold text-slate-900 tracking-tight">System & Company Settings</h2>
+          <p class="text-xs text-slate-500 mt-0.5">Manage your organization details, admin preferences, and data</p>
+        </div>
+
+        <div class="p-6 rounded-xl bg-white border border-slate-200 shadow-xs space-y-4">
+          <h3 class="text-sm font-bold text-slate-900 border-b border-slate-100 pb-2">Company Information</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+            <div>
+              <span class="text-slate-500 font-semibold block mb-1">Company Name</span>
+              <input type="text" value="Root 4 Tech" readonly class="w-full h-9 px-3 rounded-lg border border-slate-200 bg-slate-50 text-slate-800 font-medium"/>
+            </div>
+            <div>
+              <span class="text-slate-500 font-semibold block mb-1">Commercial Registration</span>
+              <input type="text" value="US-TAX-84920419" readonly class="w-full h-9 px-3 rounded-lg border border-slate-200 bg-slate-50 text-slate-800 font-medium"/>
+            </div>
+            <div>
+              <span class="text-slate-500 font-semibold block mb-1">Official Email</span>
+              <input type="text" value="contact@root4tech.com" readonly class="w-full h-9 px-3 rounded-lg border border-slate-200 bg-slate-50 text-slate-800 font-medium"/>
+            </div>
+            <div>
+              <span class="text-slate-500 font-semibold block mb-1">Base Currency</span>
+              <input type="text" value="PKR (₨)" readonly class="w-full h-9 px-3 rounded-lg border border-slate-200 bg-slate-50 text-slate-800 font-medium"/>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-6 rounded-xl bg-white border border-slate-200 shadow-xs space-y-3">
+          <h3 class="text-sm font-bold text-slate-900 border-b border-slate-100 pb-2">Demo Data Reset</h3>
+          <p class="text-xs text-slate-600">Restore default sample data for leads, clients, quotations, and invoices.</p>
+          <button onclick="resetDataToDefaults()" class="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold border border-slate-200 transition">
+            Reload Initial Demo Records
+          </button>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+
+  <!-- ========================================== -->
+  <!-- MODALS -->
+  <!-- ========================================== -->
+
+  <!-- Add Lead Modal -->
+  <div id="addLeadModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-xl w-full max-w-lg p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="text-base font-bold text-slate-900">Add New Lead</h3>
+        <button onclick="closeModal('addLeadModal')" class="text-slate-400 hover:text-slate-600">
+          <span class="material-symbols-outlined text-xl">close</span>
+        </button>
+      </div>
+      <form onsubmit="handleCreateLead(event)" class="space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Full Name *</label>
+            <input id="formLeadName" required placeholder="e.g. Sarah Miller" class="w-full h-9 px-3 rounded-lg border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-blue-600"/>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Company Name *</label>
+            <input id="formLeadCompany" required placeholder="e.g. Apex Logistics Ltd" class="w-full h-9 px-3 rounded-lg border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-blue-600"/>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Phone Number *</label>
+            <input id="formLeadPhone" required placeholder="+1 (555) 000-0000" class="w-full h-9 px-3 rounded-lg border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-blue-600"/>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Email Address *</label>
+            <input id="formLeadEmail" type="email" required placeholder="sarah@company.com" class="w-full h-9 px-3 rounded-lg border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-blue-600"/>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Country *</label>
+            <input id="formLeadCountry" required placeholder="e.g. United States" class="w-full h-9 px-3 rounded-lg border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-blue-600"/>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Lead Status *</label>
+            <select id="formLeadStatus" class="w-full h-9 px-2.5 rounded-lg border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-blue-600 bg-white">
+              <option value="New">New</option>
+              <option value="Contacted">Contacted</option>
+              <option value="Interested">Interested</option>
+              <option value="Converted">Converted</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Interested Service *</label>
+          <select id="formLeadService" class="w-full h-9 px-2.5 rounded-lg border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-blue-600 bg-white">
+            <option value="Custom Web & Cloud Platform">Custom Web & Cloud Platform</option>
+            <option value="Enterprise Architecture & DevOps">Enterprise Architecture & DevOps</option>
+            <option value="Mobile Application (iOS/Android)">Mobile Application (iOS/Android)</option>
+            <option value="Payment Gateway Integration">Payment Gateway Integration</option>
+            <option value="AI Integration & Telemetry">AI Integration & Telemetry</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Notes</label>
+          <textarea id="formLeadNotes" rows="2" placeholder="Additional requirements, meeting notes..." class="w-full p-3 rounded-lg border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-blue-600"></textarea>
+        </div>
+        <div class="flex justify-end gap-2 pt-3 border-t border-slate-100">
+          <button type="button" onclick="closeModal('addLeadModal')" class="px-4 py-2 rounded-lg border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50">Cancel</button>
+          <button type="submit" class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold">Save Lead</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Document Preview Modal (Quotations & Invoices) -->
+  <div id="printDocModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-2xl p-6 sm:p-8 space-y-6 max-h-[92vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Document Preview</span>
+        <div class="flex items-center gap-2">
+          <button onclick="window.print()" class="px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold flex items-center gap-1.5 shadow-xs transition">
+            <span class="material-symbols-outlined text-sm">print</span> Print Document
+          </button>
+          <button onclick="closeModal('printDocModal')" class="text-slate-400 hover:text-slate-600">
+            <span class="material-symbols-outlined text-xl">close</span>
+          </button>
+        </div>
+      </div>
+      <div id="printModalContent" class="space-y-6 text-slate-800">
+        <!-- Rendered dynamically via JS -->
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ========================================== -->
+  <!-- JAVASCRIPT STATE ENGINE -->
+  <!-- ========================================== -->
+  <script>
+    const INITIAL_CRM = {
+      leads: [
+        { id: '1', name: 'Sarah Miller', company: 'Apex Logistics Ltd', phone: '+1 (555) 234-8901', email: 'sarah@apexlogistics.com', country: 'United States', interestedService: 'Custom Web & Cloud Platform', status: 'Interested', dateAdded: '2025-10-14' },
+        { id: '2', name: 'Marcus Thorne', company: 'Vanguard Capital Partners', phone: '+44 20 7946 0912', email: 'm.thorne@vanguardcap.co.uk', country: 'United Kingdom', interestedService: 'FinTech Secure Portal', status: 'Contacted', dateAdded: '2025-10-13' },
+        { id: '3', name: 'Elena Rostova', company: 'Kinetics AI Robotics', phone: '+49 30 1234567', email: 'elena@kineticsai.de', country: 'Germany', interestedService: 'AI Integration & Telemetry', status: 'New', dateAdded: '2025-10-14' },
+        { id: '4', name: 'Liam O’Connor', company: 'Beacon Health Systems', phone: '+1 (555) 890-1234', email: 'loconnor@beaconhealth.org', country: 'Canada', interestedService: 'Mobile Application (iOS/Android)', status: 'Contacted', dateAdded: '2025-10-11' },
+        { id: '5', name: 'Tariq Mansour', company: 'Aura Payment Solutions', phone: '+971 50 123 4567', email: 'tariq@aurapayments.ae', country: 'United Arab Emirates', interestedService: 'Payment Gateway Integration', status: 'Converted', dateAdded: '2025-10-08' },
+        { id: '6', name: 'Chloe Bennett', company: 'Strata Engineering Group', phone: '+61 2 9876 5432', email: 'c.bennett@strataengineering.com.au', country: 'Australia', interestedService: 'Enterprise Architecture & DevOps', status: 'Converted', dateAdded: '2025-10-05' }
+      ],
+      clients: [
+        { id: '1', name: 'Chloe Bennett', company: 'Strata Engineering Group', phone: '+61 2 9876 5432', email: 'c.bennett@strataengineering.com.au', country: 'Australia', service: 'Enterprise Architecture & DevOps', status: 'Active' },
+        { id: '2', name: 'Tariq Mansour', company: 'Aura Payment Solutions', phone: '+971 50 123 4567', email: 'tariq@aurapayments.ae', country: 'United Arab Emirates', service: 'Payment Gateway Integration', status: 'Active' },
+        { id: '3', name: 'Julian Gomez', company: 'Solaris Clean Energy', phone: '+1 (555) 789-0123', email: 'julian@solarisclean.com', country: 'United States', service: 'IoT Solar Telemetry Portal', status: 'Active' },
+        { id: '4', name: 'Dr. Rachel Kim', company: 'Northstar Genomics', phone: '+1 (555) 345-8910', email: 'r.kim@northstargenomics.com', country: 'United States', service: 'Bioinformatics Data Hub', status: 'Active' },
+        { id: '5', name: 'Martin Vance', company: 'Cascade Digital Ventures', phone: '+1 (555) 456-7890', email: 'mvance@cascadedigital.io', country: 'United States', service: 'Venture Portfolio Analytics UI', status: 'Active' }
+      ],
+      quotations: [
+        { id: '1', quoteNumber: 'QT-2025-001', companyName: 'Apex Logistics Ltd', clientName: 'Sarah Miller', service: 'Custom Warehouse Dispatch & Fleet Telematics', amount: 34500, dateIssued: '2025-10-12', validUntil: '2025-11-12', status: 'Sent' },
+        { id: '2', quoteNumber: 'QT-2025-002', companyName: 'Vanguard Capital Partners', clientName: 'Marcus Thorne', service: 'FinTech Secure Investor Trading Portal', amount: 48000, dateIssued: '2025-10-10', validUntil: '2025-11-10', status: 'Accepted' },
+        { id: '3', quoteNumber: 'QT-2025-003', companyName: 'Kinetics AI Robotics', clientName: 'Elena Rostova', service: 'Computer Vision Telemetry Dashboard', amount: 22000, dateIssued: '2025-10-14', validUntil: '2025-11-14', status: 'Draft' },
+        { id: '4', quoteNumber: 'QT-2025-004', companyName: 'Solaris Clean Energy', clientName: 'Julian Gomez', service: 'Solar Farm Remote Monitoring Phase 2', amount: 19500, dateIssued: '2025-09-28', validUntil: '2025-10-28', status: 'Accepted' }
+      ],
+      invoices: [
+        { id: '1', invoiceNumber: 'INV-2025-101', companyName: 'Strata Engineering Group', clientName: 'Chloe Bennett', service: 'Cloud Infrastructure & Kubernetes Milestone 1', amount: 28000, issueDate: '2025-10-01', dueDate: '2025-10-21', status: 'Paid' },
+        { id: '2', invoiceNumber: 'INV-2025-102', companyName: 'Aura Payment Solutions', clientName: 'Tariq Mansour', service: 'Payment Processing Gateway Architecture', amount: 35000, issueDate: '2025-10-05', dueDate: '2025-10-25', status: 'Paid' },
+        { id: '3', invoiceNumber: 'INV-2025-103', companyName: 'Solaris Clean Energy', clientName: 'Julian Gomez', service: 'IoT Solar Telemetry Portal Sprint 2', amount: 14500, issueDate: '2025-10-09', dueDate: '2025-10-30', status: 'Unpaid' },
+        { id: '4', invoiceNumber: 'INV-2025-104', companyName: 'Northstar Genomics', clientName: 'Dr. Rachel Kim', service: 'Bioinformatics Workflow Engine UI', amount: 18000, issueDate: '2025-09-15', dueDate: '2025-10-05', status: 'Overdue' },
+        { id: '5', invoiceNumber: 'INV-2025-105', companyName: 'Cascade Digital Ventures', clientName: 'Martin Vance', service: 'Venture Analytics Dashboard Deliverable', amount: 22500, issueDate: '2025-10-12', dueDate: '2025-11-02', status: 'Unpaid' }
+      ],
+      sales: [
+        { id: '1', recordNumber: 'REC-2025-01', invoiceNumber: 'INV-2025-101', companyName: 'Strata Engineering Group', clientName: 'Chloe Bennett', service: 'Cloud Infrastructure & Kubernetes Setup', amount: 28000, paidDate: '2025-10-06', paymentMethod: 'Bank Wire Transfer' },
+        { id: '2', recordNumber: 'REC-2025-02', invoiceNumber: 'INV-2025-102', companyName: 'Aura Payment Solutions', clientName: 'Tariq Mansour', service: 'Payment Processing Gateway Architecture', amount: 35000, paidDate: '2025-10-09', paymentMethod: 'Bank Wire Transfer' },
+        { id: '3', recordNumber: 'REC-2025-03', invoiceNumber: 'INV-2025-095', companyName: 'Solaris Clean Energy', clientName: 'Julian Gomez', service: 'Solar Farm Telemetry Sprint 1', amount: 24000, paidDate: '2025-09-24', paymentMethod: 'ACH Direct Deposit' },
+        { id: '4', recordNumber: 'REC-2025-04', invoiceNumber: 'INV-2025-089', companyName: 'Cascade Digital Ventures', clientName: 'Martin Vance', service: 'Initial Prototype & Tech Scoping', amount: 15500, paidDate: '2025-09-02', paymentMethod: 'Credit Card / Stripe' }
+      ],
+      activities: [
+        { title: 'New Lead Added', desc: 'Elena Rostova (Kinetics AI Robotics) added to CRM', time: '2 hours ago' },
+        { title: 'Invoice Created', desc: 'Invoice #INV-2025-105 issued for Cascade Digital Ventures ($22,500)', time: '5 hours ago' },
+        { title: 'Quotation Generated', desc: 'Proposal QT-2025-001 ($34,500) created for Apex Logistics Ltd', time: '1 day ago' },
+        { title: 'Client Created', desc: 'Tariq Mansour (Aura Payment Solutions) converted from Lead', time: '3 days ago' }
+      ]
+    };
+
+    function getData() {
+      const saved = localStorage.getItem('root4tech_light_crm');
+      if (saved) {
+        try { return JSON.parse(saved); } catch (e) {}
+      }
+      localStorage.setItem('root4tech_light_crm', JSON.stringify(INITIAL_CRM));
+      return JSON.parse(JSON.stringify(INITIAL_CRM));
+    }
+
+    function saveData(d) {
+      localStorage.setItem('root4tech_light_crm', JSON.stringify(d));
+      refreshUI();
+    }
+
+    function resetDataToDefaults() {
+      if (confirm('Reload initial demo records?')) {
+        localStorage.setItem('root4tech_light_crm', JSON.stringify(INITIAL_CRM));
+        refreshUI();
+        alert('Reset to defaults complete!');
+      }
+    }
+
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('-translate-x-full');
+      document.getElementById('mobileBackdrop').classList.toggle('hidden');
+    }
+
+    function navigateView(name) {
+      const views = ['dashboard', 'leads', 'clients', 'quotations', 'invoices', 'sales', 'settings'];
+      views.forEach(v => {
+        const el = document.getElementById('view-' + v);
+        const btn = document.getElementById('nav-' + v);
+        if (el) el.classList.add('hidden');
+        if (btn) {
+          btn.className = 'nav-btn w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition';
+        }
+      });
+
+      const activeEl = document.getElementById('view-' + name);
+      const activeBtn = document.getElementById('nav-' + name);
+      if (activeEl) activeEl.classList.remove('hidden');
+      if (activeBtn) {
+        activeBtn.className = 'nav-btn w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-semibold bg-blue-50 text-blue-600 transition';
+      }
+
+      const titles = {
+        'dashboard': ['Dashboard', 'Overview of leads, clients, and revenue'],
+        'leads': ['Leads Management', 'Track and qualify incoming prospective clients'],
+        'clients': ['Clients Management', 'Active customer accounts and contracts'],
+        'quotations': ['Quotations', 'Manage commercial price estimates and proposals'],
+        'invoices': ['Invoices', 'Billing statements and customer receivable tracking'],
+        'sales': ['Sales Records', 'Historical completed transactions and paid invoices'],
+        'settings': ['Settings', 'Company profile and system preferences']
+      };
+
+      if (titles[name]) {
+        document.getElementById('pageHeaderTitle').innerText = titles[name][0];
+        document.getElementById('pageHeaderSubtitle').innerText = titles[name][1];
+      }
+
+      if (window.innerWidth < 1024) {
+        document.getElementById('sidebar').classList.add('-translate-x-full');
+        document.getElementById('mobileBackdrop').classList.add('hidden');
+      }
+    }
+
+    function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+    function openAddLeadModal() { openModal('addLeadModal'); }
+
+    function handleCreateLead(e) {
+      e.preventDefault();
+      const d = getData();
+      const newLead = {
+        id: String(Date.now()),
+        name: document.getElementById('formLeadName').value,
+        company: document.getElementById('formLeadCompany').value,
+        phone: document.getElementById('formLeadPhone').value,
+        email: document.getElementById('formLeadEmail').value,
+        country: document.getElementById('formLeadCountry').value,
+        interestedService: document.getElementById('formLeadService').value,
+        status: document.getElementById('formLeadStatus').value,
+        dateAdded: new Date().toISOString().split('T')[0]
+      };
+      d.leads.unshift(newLead);
+      d.activities.unshift({ title: 'New Lead Added', desc: `${newLead.name} (${newLead.company}) added`, time: 'Just now' });
+      saveData(d);
+      closeModal('addLeadModal');
+      e.target.reset();
+      alert(`Lead "${newLead.name}" saved!`);
+    }
+
+    function convertLead(leadId) {
+      const d = getData();
+      const lead = d.leads.find(l => l.id === leadId);
+      if (!lead) return;
+      lead.status = 'Converted';
+
+      const existingClient = d.clients.find(c => c.company.toLowerCase() === lead.company.toLowerCase());
+      if (!existingClient) {
+        d.clients.unshift({
+          id: String(Date.now()),
+          name: lead.name,
+          company: lead.company,
+          phone: lead.phone,
+          email: lead.email,
+          country: lead.country,
+          service: lead.interestedService,
+          status: 'Active'
+        });
+        d.activities.unshift({ title: 'Client Created', desc: `${lead.name} (${lead.company}) converted from Lead`, time: 'Just now' });
+      }
+      saveData(d);
+      alert(`Success! Lead converted to Client.`);
+    }
+
+    let selectedLeadIds = new Set();
+
+    function toggleLeadHelpGuide() {
+      const el = document.getElementById('leadHelpGuide');
+      if (el) el.classList.toggle('hidden');
+    }
+
+    function toggleSelectAllLeads(checked) {
+      const d = getData();
+      if (checked) {
+        d.leads.forEach(l => selectedLeadIds.add(l.id));
+      } else {
+        selectedLeadIds.clear();
+      }
+      updateBatchBar();
+      renderLeadsTable();
+    }
+
+    function toggleLeadCheckbox(id, checked) {
+      if (checked) {
+        selectedLeadIds.add(id);
+      } else {
+        selectedLeadIds.delete(id);
+      }
+      updateBatchBar();
+      renderLeadsTable();
+    }
+
+    function deselectAllLeads() {
+      selectedLeadIds.clear();
+      updateBatchBar();
+      renderLeadsTable();
+    }
+
+    function updateBatchBar() {
+      const bar = document.getElementById('leadsBatchActionBar');
+      const countText = document.getElementById('leadsSelectedCountText');
+      const allChk = document.getElementById('leadSelectAllCheckbox');
+      const d = getData();
+
+      if (bar && countText) {
+        if (selectedLeadIds.size > 0) {
+          bar.classList.remove('hidden');
+          countText.innerText = `${selectedLeadIds.size} lead(s) selected`;
+        } else {
+          bar.classList.add('hidden');
+        }
+      }
+
+      if (allChk) {
+        allChk.checked = d.leads.length > 0 && selectedLeadIds.size === d.leads.length;
+      }
+    }
+
+    function deleteLead(leadId) {
+      const d = getData();
+      const target = d.leads.find(l => l.id === leadId);
+      const name = target ? target.name : 'this lead';
+      if (confirm(`Are you sure you want to delete lead "${name}"?`)) {
+        d.leads = d.leads.filter(l => l.id !== leadId);
+        selectedLeadIds.delete(leadId);
+        d.activities.unshift({ title: 'Lead Removed', desc: `${name} was deleted from Leads`, time: 'Just now' });
+        saveData(d);
+        updateBatchBar();
+      }
+    }
+
+    function deleteSelectedLeads() {
+      if (selectedLeadIds.size === 0) return;
+      if (confirm(`Are you sure you want to permanently delete the ${selectedLeadIds.size} selected lead(s)?`)) {
+        const d = getData();
+        d.leads = d.leads.filter(l => !selectedLeadIds.has(l.id));
+        d.activities.unshift({ title: 'Leads Deleted', desc: `${selectedLeadIds.size} lead(s) deleted in bulk`, time: 'Just now' });
+        selectedLeadIds.clear();
+        saveData(d);
+        updateBatchBar();
+      }
+    }
+
+    function clearAllLeads() {
+      const d = getData();
+      if (d.leads.length === 0) {
+        alert('There are no leads to clear.');
+        return;
+      }
+      if (confirm('Are you sure you want to remove ALL previous leads? This will permanently wipe all lead records.')) {
+        d.leads = [];
+        d.activities.unshift({ title: 'All Leads Cleared', desc: 'All previous lead records were removed', time: 'Just now' });
+        selectedLeadIds.clear();
+        saveData(d);
+        updateBatchBar();
+      }
+    }
+
+    function markInvoicePaid(invId) {
+      const d = getData();
+      const inv = d.invoices.find(i => i.id === invId);
+      if (!inv || inv.status === 'Paid') return;
+      inv.status = 'Paid';
+      d.sales.unshift({
+        id: String(Date.now()),
+        recordNumber: `REC-2025-0${d.sales.length + 1}`,
+        invoiceNumber: inv.invoiceNumber,
+        companyName: inv.companyName,
+        clientName: inv.clientName,
+        service: inv.service,
+        amount: inv.amount,
+        paidDate: new Date().toISOString().split('T')[0],
+        paymentMethod: 'Bank Wire Transfer'
+      });
+      d.activities.unshift({ title: 'Invoice Paid', desc: `Payment of $${inv.amount.toLocaleString()} received for ${inv.invoiceNumber}`, time: 'Just now' });
+      saveData(d);
+      alert(`Invoice marked as Paid and added to Sales Records!`);
+    }
+
+    function previewQuote(id) {
+      const d = getData();
+      const q = d.quotations.find(item => item.id === id);
+      if (!q) return;
+      document.getElementById('printModalContent').innerHTML = `
+        <div class="flex justify-between items-start border-b border-slate-200 pb-5">
+          <div>
+            <div class="font-bold text-lg text-slate-900 flex items-center gap-2">
+              <span class="w-7 h-7 rounded bg-slate-900 text-white flex items-center justify-center text-xs">R4</span>
+              Root 4 Tech
+            </div>
+            <p class="text-xs text-slate-500 mt-1">Enterprise Software & Technology Solutions</p>
+          </div>
+          <div class="text-right">
+            <h3 class="text-xl font-bold font-mono text-blue-600">QUOTATION</h3>
+            <div class="text-xs font-mono font-bold text-slate-900 mt-1">${q.quoteNumber}</div>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4 text-xs">
+          <div>
+            <span class="text-slate-400 font-semibold uppercase block text-[10px]">Prepared For:</span>
+            <div class="font-bold text-slate-900 text-sm mt-0.5">${q.companyName}</div>
+            <div class="text-slate-600">${q.clientName}</div>
+          </div>
+          <div class="text-right space-y-1 text-xs">
+            <div><span class="text-slate-400">Date Issued: </span><span class="font-semibold">${q.dateIssued}</span></div>
+            <div><span class="text-slate-400">Valid Until: </span><span class="font-semibold">${q.validUntil}</span></div>
+          </div>
+        </div>
+        <div class="border border-slate-200 rounded-lg p-4">
+          <div class="text-xs font-semibold text-slate-500 mb-1">Scope of Service:</div>
+          <div class="text-sm font-semibold text-slate-900">${q.service}</div>
+        </div>
+        <div class="flex justify-between items-center border-t border-slate-200 pt-4">
+          <span class="text-xs font-semibold text-slate-500">Total Price (PKR):</span>
+          <span class="text-2xl font-bold font-mono text-slate-900">PKR ${q.amount.toLocaleString()}</span>
+        </div>
+      `;
+      openModal('printDocModal');
+    }
+
+    function printInvoiceDirect(id) {
+      const d = getData();
+      const inv = d.invoices.find(item => item.id === id);
+      if (!inv) return;
+      const printWin = window.open('', '_blank', 'width=850,height=900');
+      if (!printWin) {
+        previewInvoice(id);
+        setTimeout(() => window.print(), 200);
+        return;
+      }
+      printWin.document.write(`
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset="utf-8"/>
+            <title>Invoice - ${inv.invoiceNumber} - Root 4 Tech</title>
+            <style>
+              body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 40px; color: #0f172a; }
+              .hdr { display: flex; justify-content: space-between; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 24px; }
+              .logo { font-size: 20px; font-weight: 800; }
+              .inv-title { font-size: 22px; font-weight: 800; color: #2563eb; }
+              .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; font-size: 13px; }
+              table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
+              th { background: #f8fafc; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; padding: 10px 14px; text-align: left; font-size: 11px; text-transform: uppercase; color: #64748b; }
+              td { padding: 14px; border-bottom: 1px solid #f1f5f9; font-size: 13px; }
+              .box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; }
+              .total { font-size: 22px; font-weight: 800; font-family: monospace; }
+              @media print { body { padding: 0; } }
+            </style>
+          </head>
+          <body>
+            <div class="hdr">
+              <div>
+                <div class="logo">Root 4 Tech</div>
+                <div style="font-size:12px; color:#64748b;">Software Development & Technology Operations</div>
+                <div style="font-size:11px; color:#94a3b8; font-family:monospace;">NTN: 8492041-9 · billing@root4tech.com</div>
+              </div>
+              <div style="text-align: right;">
+                <div class="inv-title">INVOICE</div>
+                <div style="font-family:monospace; font-weight:700;">${inv.invoiceNumber}</div>
+                <div style="font-size:11px; font-weight:600; text-transform:uppercase; margin-top:4px;">${inv.status}</div>
+              </div>
+            </div>
+            <div class="meta-grid">
+              <div>
+                <div style="font-size:10px; text-transform:uppercase; font-weight:700; color:#94a3b8;">Billed To:</div>
+                <div style="font-size:15px; font-weight:700;">${inv.companyName}</div>
+                <div style="color:#475569;">${inv.clientName}</div>
+              </div>
+              <div style="text-align: right;">
+                <div><span style="color:#94a3b8; font-size:11px;">Issue Date: </span><strong>${inv.issueDate}</strong></div>
+                <div><span style="color:#94a3b8; font-size:11px;">Due Date: </span><strong>${inv.dueDate}</strong></div>
+              </div>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Scope / Deliverable</th>
+                  <th style="text-align: right;">Amount (PKR)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>${inv.service}</strong></td>
+                  <td style="text-align: right; font-family: monospace; font-weight: 700;">PKR ${inv.amount.toLocaleString()}</td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="box">
+              <div>
+                <div style="font-size: 11px; font-weight: 700;">Wire Instructions (PKR):</div>
+                <div style="font-size: 11px; color: #64748b; font-family: monospace;">Bank: Meezan Bank Ltd · Account: 0102-0105829101 · IBAN: PK36MEZN0001020105829101</div>
+              </div>
+              <div style="text-align: right;">
+                <div style="font-size: 11px; color: #64748b; text-transform: uppercase;">Amount Due:</div>
+                <div class="total">PKR ${inv.amount.toLocaleString()}</div>
+              </div>
+            </div>
+            <script>window.onload = function() { window.print(); };<\/script>
+          </body>
+        </html>
+      `);
+      printWin.document.close();
+    }
+
+    function previewInvoice(id) {
+      const d = getData();
+      const inv = d.invoices.find(item => item.id === id);
+      if (!inv) return;
+      document.getElementById('printModalContent').innerHTML = `
+        <div class="flex justify-between items-start border-b border-slate-200 pb-5">
+          <div>
+            <div class="font-bold text-lg text-slate-900 flex items-center gap-2">
+              <span class="w-7 h-7 rounded bg-slate-900 text-white flex items-center justify-center text-xs">R4</span>
+              Root 4 Tech
+            </div>
+            <p class="text-xs text-slate-500 mt-1">Software Development & Technology Operations</p>
+            <p class="text-[11px] font-mono text-slate-400">NTN: 8492041-9 · billing@root4tech.com</p>
+          </div>
+          <div class="text-right">
+            <h3 class="text-xl font-bold font-mono text-blue-600">INVOICE</h3>
+            <div class="text-xs font-mono font-bold text-slate-900 mt-1">${inv.invoiceNumber}</div>
+            <span class="inline-block mt-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${inv.status === 'Paid' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-amber-50 text-amber-700 border-amber-200'}">${inv.status}</span>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4 text-xs">
+          <div>
+            <span class="text-slate-400 font-semibold uppercase block text-[10px]">Billed To:</span>
+            <div class="font-bold text-slate-900 text-sm mt-0.5">${inv.companyName}</div>
+            <div class="text-slate-600">${inv.clientName}</div>
+          </div>
+          <div class="text-right space-y-1 text-xs">
+            <div><span class="text-slate-400">Issue Date: </span><span class="font-semibold">${inv.issueDate}</span></div>
+            <div><span class="text-slate-400">Due Date: </span><span class="font-bold">${inv.dueDate}</span></div>
+          </div>
+        </div>
+        <div class="border border-slate-200 rounded-lg p-4">
+          <div class="text-xs font-semibold text-slate-500 mb-1">Deliverable:</div>
+          <div class="text-sm font-semibold text-slate-900">${inv.service}</div>
+        </div>
+        <div class="p-3.5 rounded-lg bg-slate-50 border border-slate-200 text-xs flex justify-between items-center">
+          <div>
+            <div class="font-semibold text-slate-800">Wire Instructions (PKR):</div>
+            <div class="font-mono text-[11px] text-slate-500">Bank: Meezan Bank Ltd · Account: 0102-0105829101 · IBAN: PK36MEZN0001020105829101</div>
+          </div>
+          <div class="text-right">
+            <span class="text-xs text-slate-400 uppercase font-semibold">Amount Due (PKR):</span>
+            <div class="text-2xl font-bold font-mono text-slate-900">PKR ${inv.amount.toLocaleString()}</div>
+          </div>
+        </div>
+        <div class="flex justify-end pt-2">
+          <button onclick="printInvoiceDirect('${inv.id}')" class="px-3.5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold flex items-center gap-1.5 shadow-xs transition">
+            <span class="material-symbols-outlined text-sm">print</span> Print Invoice
+          </button>
+        </div>
+      `;
+      openModal('printDocModal');
+    }
+
+    function getLeadBadge(st) {
+      switch (st) {
+        case 'New': return 'bg-blue-50 text-blue-700 border-blue-200';
+        case 'Contacted': return 'bg-amber-50 text-amber-700 border-amber-200';
+        case 'Interested': return 'bg-purple-50 text-purple-700 border-purple-200';
+        case 'Converted': return 'bg-emerald-50 text-emerald-700 border-emerald-200';
+        default: return 'bg-slate-100 text-slate-700 border-slate-200';
+      }
+    }
+
+    let currentLeadFilter = 'all';
+    function filterLeadsByStatus(st) {
+      currentLeadFilter = st;
+      document.querySelectorAll('.lead-filter-btn').forEach(b => {
+        b.className = b.getAttribute('data-status') === st
+          ? 'lead-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white shadow-xs'
+          : 'lead-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900';
+      });
+      renderLeadsTable();
+    }
+
+    let currentClientFilter = 'all';
+    function filterClientsByStatus(st) {
+      currentClientFilter = st;
+      document.querySelectorAll('.client-filter-btn').forEach(b => {
+        b.className = b.getAttribute('data-status') === st
+          ? 'client-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white shadow-xs'
+          : 'client-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900';
+      });
+      renderClientsTable();
+    }
+
+    function renderLeadsTable() {
+      const d = getData();
+      const q = (document.getElementById('leadSearchInput')?.value || '').toLowerCase();
+      const tbody = document.getElementById('leadsTableBody');
+      const filtered = d.leads.filter(l => {
+        const matchesStatus = currentLeadFilter === 'all' || l.status === currentLeadFilter;
+        const matchesQ = l.name.toLowerCase().includes(q) || l.company.toLowerCase().includes(q) || l.country.toLowerCase().includes(q);
+        return matchesStatus && matchesQ;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="10" class="py-12 text-center text-slate-400">
+              <span class="material-symbols-outlined text-4xl text-slate-300 block mb-2">person_search</span>
+              <p class="text-sm font-semibold text-slate-600">No leads found</p>
+              <p class="text-xs text-slate-400 mt-1">Try clearing your filters or click "+ Add New Lead" above.</p>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(l => {
+        const isChecked = selectedLeadIds.has(l.id);
+        return `
+        <tr class="hover:bg-slate-50/60 transition-colors ${isChecked ? 'bg-blue-50/40' : ''}">
+          <td class="py-3.5 px-4 text-center">
+            <input type="checkbox" onchange="toggleLeadCheckbox('${l.id}', this.checked)" ${isChecked ? 'checked' : ''} class="rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer" />
+          </td>
+          <td class="py-3.5 px-4 font-semibold text-slate-900 whitespace-nowrap">${l.name}</td>
+          <td class="py-3.5 px-4 text-slate-700 font-medium whitespace-nowrap">${l.company}</td>
+          <td class="py-3.5 px-4 text-slate-600 whitespace-nowrap font-mono text-[11px]">${l.phone}</td>
+          <td class="py-3.5 px-4 text-slate-600 whitespace-nowrap font-mono text-[11px]">${l.email}</td>
+          <td class="py-3.5 px-4 text-slate-700 whitespace-nowrap">${l.country}</td>
+          <td class="py-3.5 px-4 text-slate-600 truncate max-w-xs">${l.interestedService}</td>
+          <td class="py-3.5 px-4 whitespace-nowrap"><span class="inline-block px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${getLeadBadge(l.status)}">${l.status}</span></td>
+          <td class="py-3.5 px-4 text-slate-500 whitespace-nowrap font-medium">${l.dateAdded}</td>
+          <td class="py-3.5 px-4 text-right whitespace-nowrap space-x-1">
+            ${l.status !== 'Converted' ? `<button onclick="convertLead('${l.id}')" class="px-2 py-1 rounded bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 text-[11px] font-semibold">Convert</button>` : ''}
+            <button onclick="deleteLead('${l.id}')" class="text-rose-600 hover:text-rose-700 hover:bg-rose-50 border border-transparent hover:border-rose-200 rounded px-2 py-1 text-[11px] font-medium transition" title="Delete lead">Delete</button>
+          </td>
+        </tr>
+      `}).join('');
+    }
+
+    function renderClientsTable() {
+      const d = getData();
+      const q = (document.getElementById('clientSearchInput')?.value || '').toLowerCase();
+      const tbody = document.getElementById('clientsTableBody');
+      const filtered = d.clients.filter(c => {
+        const matchesStatus = currentClientFilter === 'all' || c.status === currentClientFilter;
+        const matchesQ = c.name.toLowerCase().includes(q) || c.company.toLowerCase().includes(q) || c.country.toLowerCase().includes(q);
+        return matchesStatus && matchesQ;
+      });
+
+      tbody.innerHTML = filtered.map(c => `
+        <tr class="hover:bg-slate-50/60 transition-colors">
+          <td class="py-3.5 px-4 font-semibold text-slate-900 whitespace-nowrap">${c.name}</td>
+          <td class="py-3.5 px-4 text-slate-700 font-medium whitespace-nowrap">${c.company}</td>
+          <td class="py-3.5 px-4 text-slate-600 whitespace-nowrap font-mono text-[11px]">${c.phone}</td>
+          <td class="py-3.5 px-4 text-slate-600 whitespace-nowrap font-mono text-[11px]">${c.email}</td>
+          <td class="py-3.5 px-4 text-slate-700 whitespace-nowrap">${c.country}</td>
+          <td class="py-3.5 px-4 text-slate-600 truncate max-w-xs">${c.service}</td>
+          <td class="py-3.5 px-4 whitespace-nowrap"><span class="inline-block px-2.5 py-0.5 rounded-full text-[11px] font-semibold border bg-emerald-50 text-emerald-700 border-emerald-200">${c.status}</span></td>
+          <td class="py-3.5 px-4 text-right whitespace-nowrap">
+            <button onclick="navigateView('quotations')" class="px-2 py-1 rounded bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 text-[11px] font-semibold">Quote</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function renderQuotationsTable() {
+      const d = getData();
+      const tbody = document.getElementById('quotationsTableBody');
+      tbody.innerHTML = d.quotations.map(q => `
+        <tr class="hover:bg-slate-50/60 transition-colors">
+          <td class="py-3.5 px-4 font-semibold text-blue-600 font-mono whitespace-nowrap">${q.quoteNumber}</td>
+          <td class="py-3.5 px-4 whitespace-nowrap"><div class="font-semibold text-slate-900">${q.companyName}</div><div class="text-[11px] text-slate-500">${q.clientName}</div></td>
+          <td class="py-3.5 px-4 text-slate-600 max-w-xs truncate">${q.service}</td>
+          <td class="py-3.5 px-4 text-slate-500 font-medium whitespace-nowrap">${q.dateIssued}</td>
+          <td class="py-3.5 px-4 text-slate-500 font-medium whitespace-nowrap">${q.validUntil}</td>
+          <td class="py-3.5 px-4 font-bold text-slate-900 font-mono whitespace-nowrap">PKR ${q.amount.toLocaleString()}</td>
+          <td class="py-3.5 px-4 whitespace-nowrap"><span class="inline-block px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${q.status === 'Accepted' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-blue-50 text-blue-700 border-blue-200'}">${q.status}</span></td>
+          <td class="py-3.5 px-4 text-right whitespace-nowrap space-x-1.5">
+            <button onclick="previewQuote('${q.id}')" class="px-2 py-1 rounded bg-slate-100 text-slate-700 hover:bg-slate-200 text-[11px] font-medium">View Quote</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function renderInvoicesTable() {
+      const d = getData();
+      const tbody = document.getElementById('invoicesTableBody');
+      tbody.innerHTML = d.invoices.map(inv => `
+        <tr class="hover:bg-slate-50/60 transition-colors">
+          <td class="py-3.5 px-4 font-semibold text-blue-600 font-mono whitespace-nowrap">${inv.invoiceNumber}</td>
+          <td class="py-3.5 px-4 whitespace-nowrap"><div class="font-semibold text-slate-900">${inv.companyName}</div><div class="text-[11px] text-slate-500">${inv.clientName}</div></td>
+          <td class="py-3.5 px-4 text-slate-600 max-w-xs truncate">${inv.service}</td>
+          <td class="py-3.5 px-4 text-slate-500 font-medium whitespace-nowrap">${inv.issueDate}</td>
+          <td class="py-3.5 px-4 text-slate-700 font-medium whitespace-nowrap">${inv.dueDate}</td>
+          <td class="py-3.5 px-4 font-bold text-slate-900 font-mono whitespace-nowrap">PKR ${inv.amount.toLocaleString()}</td>
+          <td class="py-3.5 px-4 whitespace-nowrap"><span class="inline-block px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${inv.status === 'Paid' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-amber-50 text-amber-700 border-amber-200'}">${inv.status}</span></td>
+          <td class="py-3.5 px-4 text-right whitespace-nowrap space-x-1.5">
+            ${inv.status !== 'Paid' ? `<button onclick="markInvoicePaid('${inv.id}')" class="px-2 py-1 rounded bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 text-[11px] font-semibold">Mark Paid</button>` : ''}
+            <button onclick="printInvoiceDirect('${inv.id}')" class="px-2.5 py-1 rounded bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 text-[11px] font-semibold inline-flex items-center gap-1">Print</button>
+            <button onclick="previewInvoice('${inv.id}')" class="px-2 py-1 rounded bg-slate-100 text-slate-700 hover:bg-slate-200 text-[11px] font-medium">View</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function renderSalesTable() {
+      const d = getData();
+      const tbody = document.getElementById('salesTableBody');
+      let total = 0;
+      tbody.innerHTML = d.sales.map(s => {
+        total += s.amount;
+        return `
+          <tr class="hover:bg-slate-50/60 transition-colors">
+            <td class="py-3.5 px-4 font-semibold text-blue-600 font-mono whitespace-nowrap">${s.recordNumber}</td>
+            <td class="py-3.5 px-4 font-medium text-slate-600 font-mono whitespace-nowrap">${s.invoiceNumber}</td>
+            <td class="py-3.5 px-4 whitespace-nowrap"><div class="font-semibold text-slate-900">${s.companyName}</div><div class="text-[11px] text-slate-500">${s.clientName}</div></td>
+            <td class="py-3.5 px-4 text-slate-600 max-w-xs truncate">${s.service}</td>
+            <td class="py-3.5 px-4 font-bold text-emerald-600 font-mono text-sm whitespace-nowrap">+PKR ${s.amount.toLocaleString()}</td>
+            <td class="py-3.5 px-4 text-slate-500 font-medium whitespace-nowrap">${s.paidDate}</td>
+            <td class="py-3.5 px-4 text-right whitespace-nowrap"><span class="px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200">${s.paymentMethod}</span></td>
+          </tr>
+        `;
+      }).join('');
+
+      document.getElementById('sales-kpi-total').innerText = 'PKR ' + total.toLocaleString();
+      document.getElementById('sales-kpi-count').innerText = d.sales.length + ' Settled';
+      document.getElementById('sales-kpi-avg').innerText = 'PKR ' + (d.sales.length > 0 ? Math.round(total / d.sales.length).toLocaleString() : '0');
+    }
+
+    function refreshUI() {
+      const d = getData();
+
+      // Badges
+      document.getElementById('dash-leads-total').innerText = d.leads.length;
+      document.getElementById('dash-clients-total').innerText = d.clients.length;
+      document.getElementById('dash-quotes-total').innerText = d.quotations.length;
+      document.getElementById('dash-invoices-total').innerText = d.invoices.length;
+
+      document.getElementById('badge-leads-count').innerText = d.leads.length;
+      document.getElementById('badge-clients-count').innerText = d.clients.length;
+      document.getElementById('badge-quotes-count').innerText = d.quotations.length;
+      document.getElementById('badge-invoices-count').innerText = d.invoices.length;
+      document.getElementById('count-all-leads').innerText = d.leads.length;
+      document.getElementById('count-all-clients').innerText = d.clients.length;
+
+      // Dashboard Recent Leads
+      document.getElementById('dash-recent-leads').innerHTML = d.leads.slice(0, 5).map(l => `
+        <tr class="hover:bg-slate-50/50">
+          <td class="py-3 px-4 sm:px-6 font-semibold text-slate-900">${l.name}</td>
+          <td class="py-3 px-4 text-slate-600">${l.company}</td>
+          <td class="py-3 px-4"><span class="inline-block px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${getLeadBadge(l.status)}">${l.status}</span></td>
+          <td class="py-3 px-4 sm:px-6 text-right text-slate-500 font-medium">${l.dateAdded}</td>
+        </tr>
+      `).join('');
+
+      // Dashboard Recent Activities
+      document.getElementById('dash-recent-activities').innerHTML = d.activities.slice(0, 5).map(a => `
+        <div class="flex items-start gap-3">
+          <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center shrink-0 mt-0.5">
+            <span class="material-symbols-outlined text-base">notifications</span>
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-xs font-semibold text-slate-900">${a.title}</span>
+              <span class="text-[11px] text-slate-400 shrink-0">${a.time}</span>
+            </div>
+            <p class="text-xs text-slate-600 mt-0.5">${a.desc}</p>
+          </div>
+        </div>
+      `).join('');
+
+      renderLeadsTable();
+      renderClientsTable();
+      renderQuotationsTable();
+      renderInvoicesTable();
+      renderSalesTable();
+    }
+
+    document.addEventListener('DOMContentLoaded', refreshUI);
+  </script>
+</body>
+</html>
