@@ -1,6 +1,9 @@
 {
-  "buildCommand": "cd root4tech-crm/frontend && npm install && npm run build",
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "installCommand": "cd root4tech-crm/frontend && npm install --include=dev",
+  "buildCommand": "cd root4tech-crm/frontend && npm run build",
   "outputDirectory": "root4tech-crm/frontend/dist",
+  "framework": "vite",
   "rewrites": [
     {
       "source": "/(.*)",

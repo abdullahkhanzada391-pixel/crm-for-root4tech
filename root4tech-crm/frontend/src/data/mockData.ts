@@ -945,9 +945,13 @@ export const INITIAL_USERS: UserAccount[] = [
     role: 'admin',
     roleTitle: 'Managing Director & Administrator',
     department: 'Executive Administration',
+    phone: '+92 300 8291043',
+    shift: 'Full Time',
     avatarInitials: 'AS',
     password: 'admin123',
-    defaultRoute: '/dashboard'
+    defaultRoute: '/dashboard',
+    status: 'Active',
+    joinDate: '2024-01-15'
   },
   {
     id: 'usr-sales',
@@ -957,9 +961,13 @@ export const INITIAL_USERS: UserAccount[] = [
     roleTitle: 'Senior Sales Executive',
     shift: '10:00 AM – 06:00 PM',
     department: 'Business Development & Sales',
+    phone: '+92 321 4458920',
     avatarInitials: 'HT',
     password: 'sales123',
-    defaultRoute: '/salesperson'
+    defaultRoute: '/salesperson',
+    salary: 85000,
+    status: 'Active',
+    joinDate: '2024-03-01'
   },
   {
     id: 'usr-marketing',
@@ -969,9 +977,13 @@ export const INITIAL_USERS: UserAccount[] = [
     roleTitle: 'Senior Marketing Manager',
     shift: '10:00 AM – 06:00 PM',
     department: 'Digital Growth & Client Marketing',
+    phone: '+92 333 9102488',
     avatarInitials: 'AK',
     password: 'marketing123',
-    defaultRoute: '/marketing'
+    defaultRoute: '/marketing',
+    salary: 95000,
+    status: 'Active',
+    joinDate: '2024-02-15'
   }
 ];
 

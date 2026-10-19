@@ -206,7 +206,7 @@ export interface MarketingTask {
   completed: boolean;
 }
 
-export type UserRole = 'admin' | 'sales' | 'marketing';
+export type UserRole = 'admin' | 'sales' | 'marketing' | 'custom' | string;
 
 export interface AuthUser {
   id: string;
@@ -214,9 +214,14 @@ export interface AuthUser {
   email: string;
   role: UserRole;
   roleTitle: string;
+  phone?: string;
   shift?: string;
   department: string;
   avatarInitials: string;
+  defaultRoute?: string;
+  salary?: number;
+  status?: 'Active' | 'Onboarding' | 'On Leave' | 'Inactive';
+  joinDate?: string;
 }
 
 export interface UserAccount extends AuthUser {

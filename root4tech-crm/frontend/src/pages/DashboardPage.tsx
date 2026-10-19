@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useCRM } from '@/context/CRMContext';
+import { useAuth } from '@/context/AuthContext';
 import {
   Filter,
   Users,
@@ -16,6 +17,7 @@ import {
 
 export const DashboardPage: React.FC = () => {
   const { leads, clients, quotations, invoices, activities } = useCRM();
+  const { users } = useAuth();
 
   // React effect hook to dynamically make the Live PKR badge background blue
   const [isBlueBadge, setIsBlueBadge] = useState<boolean>(false);
@@ -123,27 +125,34 @@ export const DashboardPage: React.FC = () => {
         </div>
 
         {/* Responsive Button Grid / Row */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 w-full md:w-auto shrink-0">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 w-full md:w-auto shrink-0">
           <Link
             to="/leads"
-            className="px-3 py-2 sm:px-3.5 sm:py-2 rounded-lg bg-blue-50 hover:bg-blue-600 text-blue-700 hover:text-white border border-blue-200 hover:border-blue-600 text-xs font-semibold flex items-center justify-center gap-1.5 transition shadow-2xs active:scale-98 group"
+            className="px-3 py-2 sm:px-3 sm:py-2 rounded-lg bg-blue-50 hover:bg-blue-600 text-blue-700 hover:text-white border border-blue-200 hover:border-blue-600 text-xs font-semibold flex items-center justify-center gap-1.5 transition shadow-2xs active:scale-98 group"
           >
             <Filter className="w-3.5 h-3.5 shrink-0 text-blue-600 group-hover:text-white transition-colors" />
-            <span className="truncate">+ Manage Leads</span>
+            <span className="truncate">+ Leads</span>
+          </Link>
+          <Link
+            to="/team"
+            className="px-3 py-2 sm:px-3 sm:py-2 rounded-lg bg-indigo-50 hover:bg-indigo-600 text-indigo-700 hover:text-white border border-indigo-200 hover:border-indigo-600 text-xs font-semibold flex items-center justify-center gap-1.5 transition shadow-2xs active:scale-98 group"
+          >
+            <Users className="w-3.5 h-3.5 shrink-0 text-indigo-600 group-hover:text-white transition-colors" />
+            <span className="truncate">+ Team ({users.length})</span>
           </Link>
           <Link
             to="/quotations"
-            className="px-3 py-2 sm:px-3.5 sm:py-2 rounded-lg bg-purple-50 hover:bg-purple-600 text-purple-700 hover:text-white border border-purple-200 hover:border-purple-600 text-xs font-semibold flex items-center justify-center gap-1.5 transition shadow-2xs active:scale-98 group"
+            className="px-3 py-2 sm:px-3 sm:py-2 rounded-lg bg-purple-50 hover:bg-purple-600 text-purple-700 hover:text-white border border-purple-200 hover:border-purple-600 text-xs font-semibold flex items-center justify-center gap-1.5 transition shadow-2xs active:scale-98 group"
           >
             <FileText className="w-3.5 h-3.5 shrink-0 text-purple-600 group-hover:text-white transition-colors" />
-            <span className="truncate">+ New Quotation</span>
+            <span className="truncate">+ Quotations</span>
           </Link>
           <Link
             to="/invoices"
-            className="col-span-2 sm:col-span-1 px-3 py-2 sm:px-3.5 sm:py-2 rounded-lg bg-amber-50 hover:bg-amber-600 text-amber-700 hover:text-white border border-amber-200 hover:border-amber-600 text-xs font-semibold flex items-center justify-center gap-1.5 transition shadow-2xs active:scale-98 group"
+            className="px-3 py-2 sm:px-3 sm:py-2 rounded-lg bg-amber-50 hover:bg-amber-600 text-amber-700 hover:text-white border border-amber-200 hover:border-amber-600 text-xs font-semibold flex items-center justify-center gap-1.5 transition shadow-2xs active:scale-98 group"
           >
             <Receipt className="w-3.5 h-3.5 shrink-0 text-amber-600 group-hover:text-white transition-colors" />
-            <span className="truncate">+ Invoices & Billing</span>
+            <span className="truncate">+ Billing</span>
           </Link>
         </div>
       </div>

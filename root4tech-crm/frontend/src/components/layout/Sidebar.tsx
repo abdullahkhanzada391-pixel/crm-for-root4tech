@@ -4,6 +4,7 @@ import {
   LayoutDashboard,
   Filter,
   Users,
+  UserCheck,
   FileText,
   Receipt,
   BadgeDollarSign,
@@ -35,7 +36,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const navigate = useNavigate();
   const { leads, clients, quotations, invoices } = useCRM();
-  const { user, logout } = useAuth();
+  const { user, users, logout } = useAuth();
 
   // React effect state: tracks hovered item for tooltips & micro-interactions
   const [hoveredPath, setHoveredPath] = useState<string | null>(null);
@@ -58,6 +59,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
       icon: Users, 
       count: clients.length, 
       badgeColor: 'bg-emerald-100 text-emerald-950 border-emerald-200 shadow-xs font-extrabold' 
+    },
+    { 
+      label: 'Team Members', 
+      path: '/team', 
+      icon: UserCheck, 
+      count: users.length, 
+      badgeColor: 'bg-indigo-100 text-indigo-950 border-indigo-200 shadow-xs font-extrabold' 
     },
     { 
       label: 'Quotations', 
@@ -208,24 +216,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </nav>
           </div>
 
-          {/* Dynamic Live System Pulse / Heartbeat Status */}
-          {!isCollapsed && (
-            <div className="px-3 py-2 mx-3 mb-2 rounded-xl bg-slate-900/70 border border-slate-800 flex items-center justify-between text-[11px] text-slate-300 transition-all hover:bg-slate-900">
-              <div className="flex items-center gap-2">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
-                </span>
-                <span className="font-semibold text-slate-200 text-[11px]">System Online</span>
-              </div>
-              <span className="text-[10px] text-emerald-300 font-mono font-bold bg-emerald-950/60 border border-emerald-800/60 px-2 py-0.5 rounded shadow-xs">
-                PKR Live
-              </span>
-            </div>
-          )}
-
           {/* Desktop Collapse Toggle */}
-          <div className="hidden lg:flex px-3 py-2 border-t border-slate-800/80 justify-end bg-slate-950/40">
+          <div
+            className={`hidden lg:flex items-center px-3 py-2 border-t border-slate-800/80 bg-slate-950/40 ${
+              isCollapsed ? 'justify-center' : 'justify-between'
+            }`}
+          >
+            {!isCollapsed && (
+              <span className="text-[11px] font-semibold text-slate-400">
+                Collapse Menu
+              </span>
+            )}
             <button
               onClick={onToggleCollapse}
               className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition"
@@ -241,7 +242,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
           {/* Dynamic User Profile & Login / Logout Action at Bottom */}
           <div className="p-3 border-t border-slate-800/80 bg-slate-950/60 space-y-2">
-            <div className="flex items-center gap-3 p-2 rounded-xl bg-slate-900/70 border border-slate-800/80 hover:bg-slate-900 transition">
+            <div
+              className={`flex items-center gap-3 p-2 rounded-xl bg-slate-900/70 border border-slate-800/80 hover:bg-slate-900 transition ${
+                isCollapsed ? 'justify-center' : ''
+              }`}
+            >
               <div className="relative shrink-0">
                 <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-bold text-xs flex items-center justify-center shadow-xs">
                   {user?.avatarInitials || 'AD'}

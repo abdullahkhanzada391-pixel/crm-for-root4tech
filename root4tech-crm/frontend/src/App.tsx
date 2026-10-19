@@ -12,6 +12,7 @@ import { QuotationsPage } from '@/pages/QuotationsPage';
 import { InvoicesPage } from '@/pages/InvoicesPage';
 import { SalesRecordsPage } from '@/pages/SalesRecordsPage';
 import { SettingsPage } from '@/pages/SettingsPage';
+import { TeamPage } from '@/pages/TeamPage';
 import { SalesPersonPortalPage } from '@/pages/SalesPersonPortalPage';
 import { MarketingManagerDashboardPage } from '@/pages/MarketingManagerDashboardPage';
 
@@ -58,6 +59,8 @@ export const App: React.FC = () => {
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/leads" element={<LeadsPage />} />
             <Route path="/clients" element={<ClientsPage />} />
+            <Route path="/team" element={<TeamPage />} />
+            <Route path="/team-members" element={<Navigate to="/team" replace />} />
             <Route path="/quotations" element={<QuotationsPage />} />
             <Route path="/invoices" element={<InvoicesPage />} />
             <Route path="/sales" element={<SalesRecordsPage />} />

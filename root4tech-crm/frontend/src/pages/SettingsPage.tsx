@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useCRM } from '@/context/CRMContext';
 import { useAuth } from '@/context/AuthContext';
 import { UserRole, UserAccount } from '@/types/crm';
@@ -56,9 +57,12 @@ export const SettingsPage: React.FC = () => {
   const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
   const [newUserName, setNewUserName] = useState('');
   const [newUserEmail, setNewUserEmail] = useState('');
+  const [newUserPhone, setNewUserPhone] = useState('');
   const [newUserRole, setNewUserRole] = useState<UserRole>('sales');
+  const [newUserRoleTitle, setNewUserRoleTitle] = useState('Sales Representative');
   const [newUserDepartment, setNewUserDepartment] = useState('Business Development & Sales');
   const [newUserShift, setNewUserShift] = useState('10:00 AM – 06:00 PM');
+  const [newUserPortalRoute, setNewUserPortalRoute] = useState('/salesperson');
   const [newUserPassword, setNewUserPassword] = useState('');
 
   // Toast feedback
@@ -143,16 +147,28 @@ export const SettingsPage: React.FC = () => {
       .toUpperCase()
       .slice(0, 2) || 'US';
 
-    const defaultRoute = newUserRole === 'admin' ? '/dashboard' : newUserRole === 'sales' ? '/salesperson' : '/marketing';
+    const defaultRoute =
+      newUserRole === 'admin' ? '/dashboard' :
+      newUserRole === 'sales' ? '/salesperson' :
+      newUserRole === 'marketing' ? '/marketing' :
+      newUserPortalRoute || '/dashboard';
+
+    const finalTitle = newUserRoleTitle.trim() || (
+      newUserRole === 'admin' ? 'Administrator' :
+      newUserRole === 'sales' ? 'Sales Representative' :
+      newUserRole === 'marketing' ? 'Marketing Manager' :
+      'Team Member'
+    );
 
     addUser({
       name: newUserName.trim(),
       email: newUserEmail.trim(),
+      phone: newUserPhone.trim(),
       password: newUserPassword.trim(),
       role: newUserRole,
-      roleTitle: newUserRole === 'admin' ? 'Administrator' : newUserRole === 'sales' ? 'Sales Representative' : 'Marketing Manager',
-      department: newUserDepartment,
-      shift: newUserShift,
+      roleTitle: finalTitle,
+      department: newUserDepartment.trim() || 'General Operations',
+      shift: newUserShift.trim(),
       avatarInitials: initials,
       defaultRoute
     });
@@ -160,8 +176,9 @@ export const SettingsPage: React.FC = () => {
     setIsAddUserModalOpen(false);
     setNewUserName('');
     setNewUserEmail('');
+    setNewUserPhone('');
     setNewUserPassword('');
-    showToast(`User ${newUserName} added successfully.`);
+    showToast(`User ${newUserName} added successfully as ${finalTitle}.`);
   };
 
   return (
@@ -213,14 +230,25 @@ export const SettingsPage: React.FC = () => {
                 User Accounts & Password Management
               </h3>
               <p className="text-xs text-slate-500">
-                Set credentials and passwords for Administrator, Sales Persons, and Marketing Managers
+                Set credentials and passwords for Administrator, Sales Persons, Marketing Managers, or custom roles
               </p>
             </div>
           </div>
 
-          <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-700">
-            {users.length} Active Accounts
-          </span>
+          <div className="flex items-center gap-2">
+            <Link
+              to="/team"
+              className="px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-semibold border border-indigo-200 transition flex items-center gap-1.5"
+            >
+              <span>Team Directory</span>
+              <span className="text-[10px] bg-indigo-600 text-white px-1.5 py-0.2 rounded-full font-bold">
+                {users.length}
+              </span>
+            </Link>
+            <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-700">
+              {users.length} Active Accounts
+            </span>
+          </div>
         </div>
 
         {/* User Accounts Table */}
@@ -604,29 +632,66 @@ export const SettingsPage: React.FC = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">User Role *</label>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Role Category *</label>
                   <select
                     value={newUserRole}
                     onChange={e => {
                       const role = e.target.value as UserRole;
                       setNewUserRole(role);
                       if (role === 'sales') {
+                        setNewUserRoleTitle('Sales Representative');
                         setNewUserDepartment('Business Development & Sales');
                         setNewUserShift('10:00 AM – 06:00 PM');
+                        setNewUserPortalRoute('/salesperson');
                       } else if (role === 'marketing') {
+                        setNewUserRoleTitle('Marketing Manager');
                         setNewUserDepartment('Digital Growth & Client Marketing');
                         setNewUserShift('10:00 AM – 06:00 PM');
-                      } else {
+                        setNewUserPortalRoute('/marketing');
+                      } else if (role === 'admin') {
+                        setNewUserRoleTitle('Administrator & Director');
                         setNewUserDepartment('Executive Management');
                         setNewUserShift('Full Time');
+                        setNewUserPortalRoute('/dashboard');
+                      } else {
+                        setNewUserRoleTitle('');
+                        setNewUserDepartment('General Operations');
+                        setNewUserShift('Full Time / Flexible');
+                        setNewUserPortalRoute('/dashboard');
                       }
                     }}
                     className="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
-                    <option value="sales">Sales Representative (Sales Portal Access)</option>
-                    <option value="marketing">Marketing Manager (Marketing Hub Access)</option>
-                    <option value="admin">Administrator (Full Admin Access)</option>
+                    <option value="sales">🎯 Sales Person (Sales Portal Access)</option>
+                    <option value="marketing">🚀 Marketing Manager (Marketing Hub Access)</option>
+                    <option value="admin">🛡️ Administrator (Full Admin Access)</option>
+                    <option value="custom">✨ Custom Role / Other ("Anything Else")</option>
                   </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Job Title / Designation *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Sales Executive, Marketing Lead, QA Engineer..."
+                    value={newUserRoleTitle}
+                    onChange={e => setNewUserRoleTitle(e.target.value)}
+                    className="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Phone / WhatsApp</label>
+                  <input
+                    type="tel"
+                    placeholder="e.g. +92 300 1234567"
+                    value={newUserPhone}
+                    onChange={e => setNewUserPhone(e.target.value)}
+                    className="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
                 </div>
 
                 <div>
@@ -652,16 +717,29 @@ export const SettingsPage: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Initial Password *</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. user123"
-                    value={newUserPassword}
-                    onChange={e => setNewUserPassword(e.target.value)}
-                    className="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
-                  />
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Portal Workspace Access</label>
+                  <select
+                    value={newUserPortalRoute}
+                    onChange={e => setNewUserPortalRoute(e.target.value)}
+                    className="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="/salesperson">Salesperson Portal (/salesperson)</option>
+                    <option value="/marketing">Marketing Manager Hub (/marketing)</option>
+                    <option value="/dashboard">Executive CRM Dashboard (/dashboard)</option>
+                  </select>
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Initial Password *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. user123"
+                  value={newUserPassword}
+                  onChange={e => setNewUserPassword(e.target.value)}
+                  className="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
+                />
               </div>
 
               <div className="pt-3 border-t border-slate-200 flex items-center justify-end gap-2">
