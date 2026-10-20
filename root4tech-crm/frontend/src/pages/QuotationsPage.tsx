@@ -33,8 +33,7 @@ export const QuotationsPage: React.FC = () => {
     addQuotation,
     updateQuotation,
     deleteQuotation,
-    deleteMultipleQuotations,
-    convertQuotationToInvoice
+    deleteMultipleQuotations
   } = useCRM();
   const navigate = useNavigate();
 
@@ -264,10 +263,9 @@ export const QuotationsPage: React.FC = () => {
     }
   };
 
-  const handleConvertToInvoice = (quote: Quotation) => {
-    convertQuotationToInvoice(quote.id);
-    showToast(`Quotation "${quote.quoteNumber}" converted to an active invoice!`);
-    navigate('/invoices');
+  const handleAcceptQuote = (quote: Quotation) => {
+    updateQuotation(quote.id, { status: 'Accepted' });
+    showToast(`Quotation "${quote.quoteNumber}" marked as Accepted!`);
   };
 
 
@@ -344,7 +342,7 @@ export const QuotationsPage: React.FC = () => {
             Commercial Quotations
           </h2>
           <p className="text-xs text-slate-500 mt-0.5">
-            Create proposals, send scope estimates in PKR, and convert accepted quotes to invoices
+            Create proposals, send scope estimates in PKR, and track commercial deliverables
           </p>
         </div>
 
@@ -520,13 +518,13 @@ export const QuotationsPage: React.FC = () => {
                               <button
                                 type="button"
                                 onClick={() => {
-                                  handleConvertToInvoice(q);
+                                  handleAcceptQuote(q);
                                   setOpenActionDropdownId(null);
                                 }}
                                 className="w-full text-left px-3.5 py-2 hover:bg-emerald-50 text-emerald-800 flex items-center gap-2.5 font-medium transition"
                               >
                                 <CheckSquare className="w-4 h-4 text-emerald-600" />
-                                <span>Convert to Active Invoice</span>
+                                <span>Mark as Accepted</span>
                               </button>
                             )}
                             <button
@@ -580,7 +578,7 @@ export const QuotationsPage: React.FC = () => {
                       </div>
                       <p className="text-sm font-semibold text-slate-700">No quotations found</p>
                       <p className="text-xs text-slate-400 max-w-sm">
-                        Create client proposals with multiple service deliverables and print-ready invoices in PKR.
+                        Create client proposals with multiple service deliverables and print-ready quotations in PKR.
                       </p>
                       <button
                         onClick={openAddModal}

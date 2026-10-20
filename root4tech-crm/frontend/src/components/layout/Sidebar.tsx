@@ -6,7 +6,6 @@ import {
   Users,
   UserCheck,
   FileText,
-  Receipt,
   BadgeDollarSign,
   Settings,
   ChevronLeft,
@@ -36,14 +35,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onMobileClose,
 }) => {
   const navigate = useNavigate();
-  const { leads, clients, quotations, invoices } = useCRM();
+  const { leads, clients, quotations } = useCRM();
   const { user, users, logout } = useAuth();
 
   // React effect state: tracks hovered item for tooltips & micro-interactions
   const [hoveredPath, setHoveredPath] = useState<string | null>(null);
-
-  // Live Counts for Navigation Items
-  const unpaidInvoicesCount = invoices.filter(i => i.status !== 'Paid').length;
 
   const menuItems = [
     { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
@@ -74,13 +70,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
       icon: FileText, 
       count: quotations.length, 
       badgeColor: 'bg-purple-100 text-purple-950 border-purple-200 shadow-xs font-extrabold' 
-    },
-    { 
-      label: 'Invoices', 
-      path: '/invoices', 
-      icon: Receipt, 
-      count: unpaidInvoicesCount > 0 ? unpaidInvoicesCount : undefined, 
-      badgeColor: 'bg-amber-300 text-amber-950 border-amber-400 shadow-xs font-extrabold' 
     },
     { label: 'Sales Records', path: '/sales', icon: BadgeDollarSign },
     { label: 'Settings', path: '/settings', icon: Settings },

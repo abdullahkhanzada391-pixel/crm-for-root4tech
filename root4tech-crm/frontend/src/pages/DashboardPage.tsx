@@ -6,17 +6,18 @@ import {
   Filter,
   Users,
   FileText,
-  Receipt,
+  BadgeDollarSign,
   ArrowRight,
   Clock,
   CheckCircle2,
   TrendingUp,
   CreditCard,
+  DollarSign,
   Activity as ActivityIcon
 } from 'lucide-react';
 
 export const DashboardPage: React.FC = () => {
-  const { leads, clients, quotations, invoices, activities } = useCRM();
+  const { leads, clients, quotations, salesRecords, activities } = useCRM();
   const { users } = useAuth();
 
   // React effect hook to dynamically make the Live PKR badge background blue
@@ -32,17 +33,15 @@ export const DashboardPage: React.FC = () => {
   const totalClients = clients.length;
   const totalQuotations = quotations.length;
   const acceptedQuotations = quotations.filter(q => q.status === 'Accepted').length;
-  const totalInvoices = invoices.length;
-  const paidInvoices = invoices.filter(i => i.status === 'Paid').length;
+  const totalSales = salesRecords.length;
 
   // Financial PKR Metrics
-  const collectedPKR = invoices.filter(i => i.status === 'Paid').reduce((s, i) => s + i.amount, 0);
-  const pendingPKR = invoices.filter(i => i.status !== 'Paid').reduce((s, i) => s + i.amount, 0);
+  const totalRevenuePKR = salesRecords.reduce((s, r) => s + r.amount, 0);
   const pipelinePKR = quotations.reduce((s, q) => s + q.amount, 0);
+  const avgDealPKR = totalSales > 0 ? Math.round(totalRevenuePKR / totalSales) : 0;
 
-  // Conversion / Collection Percentages
+  // Conversion / Acceptance Percentages
   const conversionRate = totalLeads > 0 ? Math.round((convertedLeads / totalLeads) * 100) : 0;
-  const collectionRate = totalInvoices > 0 ? Math.round((paidInvoices / totalInvoices) * 100) : 0;
   const quoteAcceptanceRate = totalQuotations > 0 ? Math.round((acceptedQuotations / totalQuotations) * 100) : 0;
 
   // Recent 5 Leads
@@ -85,11 +84,11 @@ export const DashboardPage: React.FC = () => {
           icon: <FileText className="w-4 h-4 text-purple-600" />,
           classes: 'bg-purple-50 text-purple-600 border-purple-100'
         };
-      case 'invoice_created':
-      case 'invoice_paid':
+      case 'payment_received':
+      case 'sale_completed':
         return {
-          icon: <Receipt className="w-4 h-4 text-amber-600" />,
-          classes: 'bg-amber-50 text-amber-600 border-amber-100'
+          icon: <BadgeDollarSign className="w-4 h-4 text-emerald-600" />,
+          classes: 'bg-emerald-50 text-emerald-600 border-emerald-100'
         };
       default:
         return {
@@ -120,7 +119,7 @@ export const DashboardPage: React.FC = () => {
             </span>
           </div>
           <p className="text-xs text-slate-500 mt-0.5 truncate">
-            Quickly manage pipeline leads, generate commercial quotations, and issue printable PKR invoices
+            Quickly manage pipeline leads, generate commercial quotations, and track sales revenue
           </p>
         </div>
 
@@ -148,29 +147,29 @@ export const DashboardPage: React.FC = () => {
             <span className="truncate">+ Quotations</span>
           </Link>
           <Link
-            to="/invoices"
-            className="px-3 py-2 sm:px-3 sm:py-2 rounded-lg bg-amber-50 hover:bg-amber-600 text-amber-700 hover:text-white border border-amber-200 hover:border-amber-600 text-xs font-semibold flex items-center justify-center gap-1.5 transition shadow-2xs active:scale-98 group"
+            to="/sales"
+            className="px-3 py-2 sm:px-3 sm:py-2 rounded-lg bg-emerald-50 hover:bg-emerald-600 text-emerald-700 hover:text-white border border-emerald-200 hover:border-emerald-600 text-xs font-semibold flex items-center justify-center gap-1.5 transition shadow-2xs active:scale-98 group"
           >
-            <Receipt className="w-3.5 h-3.5 shrink-0 text-amber-600 group-hover:text-white transition-colors" />
-            <span className="truncate">+ Billing</span>
+            <BadgeDollarSign className="w-3.5 h-3.5 shrink-0 text-emerald-600 group-hover:text-white transition-colors" />
+            <span className="truncate">+ Sales</span>
           </Link>
         </div>
       </div>
 
       {/* 2. Executive Financial Strip (PKR Revenue & Receivables) */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-        {/* Card A: Collected Revenue - Emerald Green */}
+        {/* Card A: Closed Revenue - Emerald Green */}
         <div className="p-4 sm:p-4.5 rounded-xl bg-white border border-slate-200 hover:border-emerald-200 shadow-xs flex items-center justify-between transition-colors">
           <div className="min-w-0 pr-2">
             <span className="text-[11px] font-bold uppercase text-slate-500 tracking-wider block">
-              Collected Revenue (PKR)
+              Closed Revenue (PKR)
             </span>
             <div className="text-xl sm:text-2xl font-bold text-emerald-600 font-mono mt-0.5 truncate">
-              PKR {collectedPKR.toLocaleString()}
+              PKR {totalRevenuePKR.toLocaleString()}
             </div>
             <div className="flex items-center gap-1.5 text-[11px] text-slate-500 mt-1">
-              <span className="font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-md border border-emerald-100">{paidInvoices} paid invoices</span>
-              <span>· {collectionRate}% cleared</span>
+              <span className="font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-md border border-emerald-100">{totalSales} transactions</span>
+              <span>· verified ledger</span>
             </div>
           </div>
           <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center shrink-0">
@@ -178,26 +177,7 @@ export const DashboardPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Card B: Pending Receivables - Amber Orange */}
-        <div className="p-4 sm:p-4.5 rounded-xl bg-white border border-slate-200 hover:border-amber-200 shadow-xs flex items-center justify-between transition-colors">
-          <div className="min-w-0 pr-2">
-            <span className="text-[11px] font-bold uppercase text-slate-500 tracking-wider block">
-              Pending Receivables (PKR)
-            </span>
-            <div className="text-xl sm:text-2xl font-bold text-amber-600 font-mono mt-0.5 truncate">
-              PKR {pendingPKR.toLocaleString()}
-            </div>
-            <div className="flex items-center gap-1.5 text-[11px] text-slate-500 mt-1">
-              <span className="font-semibold text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded-md border border-amber-100">{totalInvoices - paidInvoices} awaiting payment</span>
-              <span>· active wire</span>
-            </div>
-          </div>
-          <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 border border-amber-100 flex items-center justify-center shrink-0">
-            <CreditCard className="w-5 h-5" />
-          </div>
-        </div>
-
-        {/* Card C: Pipeline Quote Volume - Purple */}
+        {/* Card B: Pipeline Quote Volume - Purple */}
         <div className="p-4 sm:p-4.5 rounded-xl bg-white border border-slate-200 hover:border-purple-200 shadow-xs flex items-center justify-between transition-colors">
           <div className="min-w-0 pr-2">
             <span className="text-[11px] font-bold uppercase text-slate-500 tracking-wider block">
@@ -213,6 +193,25 @@ export const DashboardPage: React.FC = () => {
           </div>
           <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 border border-purple-100 flex items-center justify-center shrink-0">
             <FileText className="w-5 h-5" />
+          </div>
+        </div>
+
+        {/* Card C: Average Deal Size - Amber Orange */}
+        <div className="p-4 sm:p-4.5 rounded-xl bg-white border border-slate-200 hover:border-amber-200 shadow-xs flex items-center justify-between transition-colors">
+          <div className="min-w-0 pr-2">
+            <span className="text-[11px] font-bold uppercase text-slate-500 tracking-wider block">
+              Average Deal Size (PKR)
+            </span>
+            <div className="text-xl sm:text-2xl font-bold text-amber-600 font-mono mt-0.5 truncate">
+              PKR {avgDealPKR.toLocaleString()}
+            </div>
+            <div className="flex items-center gap-1.5 text-[11px] text-slate-500 mt-1">
+              <span className="font-semibold text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded-md border border-amber-100">{totalClients} client accounts</span>
+              <span>· deal size</span>
+            </div>
+          </div>
+          <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 border border-amber-100 flex items-center justify-center shrink-0">
+            <BadgeDollarSign className="w-5 h-5" />
           </div>
         </div>
       </div>
@@ -303,30 +302,30 @@ export const DashboardPage: React.FC = () => {
           </div>
         </Link>
 
-        {/* Card 4: Total Invoices - Amber Orange */}
+        {/* Card 4: Sales Records - Emerald */}
         <Link
-          to="/invoices"
-          className="p-3.5 sm:p-5 rounded-xl bg-white border border-slate-200 shadow-xs hover:border-amber-300 hover:shadow-sm transition-all group active:scale-98"
+          to="/sales"
+          className="p-3.5 sm:p-5 rounded-xl bg-white border border-slate-200 shadow-xs hover:border-emerald-300 hover:shadow-sm transition-all group active:scale-98"
         >
           <div className="flex items-center justify-between">
             <span className="text-[11px] sm:text-xs font-semibold text-slate-500 uppercase tracking-wider truncate">
-              Invoices
+              Sales Records
             </span>
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-amber-50 text-amber-600 border border-amber-100 flex items-center justify-center group-hover:bg-amber-600 group-hover:text-white group-hover:border-amber-600 transition-colors shrink-0">
-              <Receipt className="w-4 h-4" />
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center group-hover:bg-emerald-600 group-hover:text-white group-hover:border-emerald-600 transition-colors shrink-0">
+              <BadgeDollarSign className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-2 sm:mt-3 flex items-baseline justify-between">
             <span className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight font-mono">
-              {totalInvoices}
+              {totalSales}
             </span>
-            <span className="text-[11px] sm:text-xs text-amber-600 font-semibold flex items-center gap-0.5 group-hover:translate-x-0.5 transition-transform">
-              <span className="hidden sm:inline">Billing</span> <ArrowRight className="w-3.5 h-3.5" />
+            <span className="text-[11px] sm:text-xs text-emerald-600 font-semibold flex items-center gap-0.5 group-hover:translate-x-0.5 transition-transform">
+              <span className="hidden sm:inline">Ledger</span> <ArrowRight className="w-3.5 h-3.5" />
             </span>
           </div>
           <div className="mt-2 flex items-center">
-            <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] sm:text-[11px] font-semibold bg-amber-50 text-amber-700 border border-amber-100 truncate">
-              {paidInvoices} paid · {totalInvoices - paidInvoices} pending
+            <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] sm:text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-100 truncate">
+              PKR {totalRevenuePKR.toLocaleString()} realized
             </span>
           </div>
         </Link>
@@ -346,7 +345,7 @@ export const DashboardPage: React.FC = () => {
           </span>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
           {/* Conversion Rate - Blue */}
           <div className="p-3.5 rounded-lg bg-blue-50/50 border border-blue-100/70 space-y-1.5">
             <div className="flex justify-between text-xs">
@@ -360,21 +359,6 @@ export const DashboardPage: React.FC = () => {
               />
             </div>
             <span className="text-[10px] text-blue-700 font-medium block">{convertedLeads} of {totalLeads} qualified</span>
-          </div>
-
-          {/* Collection Rate - Emerald Green */}
-          <div className="p-3.5 rounded-lg bg-emerald-50/50 border border-emerald-100/70 space-y-1.5">
-            <div className="flex justify-between text-xs">
-              <span className="text-slate-700 font-medium">Invoice Collection</span>
-              <span className="font-bold text-emerald-600 font-mono">{collectionRate}%</span>
-            </div>
-            <div className="w-full h-2 rounded-full bg-emerald-100/80 overflow-hidden">
-              <div
-                className="h-full bg-emerald-600 rounded-full transition-all duration-500"
-                style={{ width: `${Math.min(collectionRate, 100)}%` }}
-              />
-            </div>
-            <span className="text-[10px] text-emerald-700 font-medium block">{paidInvoices} of {totalInvoices} paid in full</span>
           </div>
 
           {/* Quote Acceptance - Purple */}

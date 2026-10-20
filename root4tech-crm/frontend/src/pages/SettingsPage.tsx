@@ -82,7 +82,7 @@ export const SettingsPage: React.FC = () => {
   const handleResetData = () => {
     if (
       window.confirm(
-        'Are you sure you want to reload the initial demo data? Any custom leads, clients, or invoices added will be reset to default demo records.'
+        'Are you sure you want to reload the initial demo data? Any custom leads, clients, or quotations added will be reset to default demo records.'
       )
     ) {
       resetToDefaults();
@@ -390,10 +390,10 @@ export const SettingsPage: React.FC = () => {
           <Building className="w-5 h-5 text-blue-600" />
           <div>
             <h3 className="text-sm font-bold text-slate-900">
-              Company Details & Invoicing Settings
+              Company Details & Profile Settings
             </h3>
             <p className="text-xs text-slate-500">
-              Appears on quotations, invoices, salary slips, and receipts
+              Appears on commercial quotations, salary slips, and receipts
             </p>
           </div>
         </div>
@@ -490,7 +490,7 @@ export const SettingsPage: React.FC = () => {
         </div>
 
         <p className="text-xs text-slate-600 leading-relaxed">
-          Clicking the button below will restore default demo leads, clients, invoices, and revert any modified user passwords to their standard defaults.
+          Clicking the button below will restore default demo leads, clients, quotations, and revert any modified user passwords to their standard defaults.
         </p>
 
         <button

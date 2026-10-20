@@ -4,7 +4,6 @@ import { useCRM } from '@/context/CRMContext';
 import {
   Bell,
   AlertTriangle,
-  Receipt,
   FileText,
   Filter,
   CheckCircle2,
@@ -15,7 +14,7 @@ import {
 
 interface NotificationItem {
   id: string;
-  type: 'overdue_invoice' | 'duplicate_leads' | 'new_lead' | 'pending_quote';
+  type: 'duplicate_leads' | 'new_lead' | 'pending_quote';
   title: string;
   description: string;
   time: string;
@@ -26,7 +25,7 @@ interface NotificationItem {
 
 export const NotificationCenter: React.FC = () => {
   const navigate = useNavigate();
-  const { invoices, leads, quotations } = useCRM();
+  const { leads, quotations } = useCRM();
   const [isOpen, setIsOpen] = useState(false);
   const [readIds, setReadIds] = useState<string[]>(() => {
     try {
@@ -55,24 +54,6 @@ export const NotificationCenter: React.FC = () => {
   // Compute dynamic notifications from live CRM data
   const notifications: NotificationItem[] = React.useMemo(() => {
     const items: NotificationItem[] = [];
-    const today = new Date().toISOString().split('T')[0];
-
-    // 1. Overdue invoices
-    const overdueInvoices = invoices.filter(
-      inv => inv.status !== 'Paid' && inv.dueDate && inv.dueDate < today
-    );
-    overdueInvoices.forEach(inv => {
-      items.push({
-        id: `notif-overdue-${inv.id}`,
-        type: 'overdue_invoice',
-        title: `Overdue Invoice ${inv.invoiceNumber}`,
-        description: `${inv.clientName} owes PKR ${inv.amount.toLocaleString()} (Due: ${inv.dueDate})`,
-        time: 'Payment Overdue',
-        actionUrl: `/invoices?search=${encodeURIComponent(inv.invoiceNumber)}`,
-        badge: 'Overdue',
-        badgeClass: 'bg-rose-100 text-rose-700 border-rose-200'
-      });
-    });
 
     // 2. Duplicate leads in pipeline
     const emailSet = new Map<string, string>();
@@ -124,7 +105,7 @@ export const NotificationCenter: React.FC = () => {
         id: 'notif-pending-quotes',
         type: 'pending_quote',
         title: `${pendingQuotes.length} Sent Quotation${pendingQuotes.length > 1 ? 's' : ''} Pending`,
-        description: `Follow up with clients to convert proposals into invoices.`,
+        description: `Follow up with clients to close proposals and confirm deliverables.`,
         time: 'Commercial',
         actionUrl: '/quotations',
         badge: 'In Review',
@@ -133,7 +114,7 @@ export const NotificationCenter: React.FC = () => {
     }
 
     return items;
-  }, [invoices, leads, quotations]);
+  }, [leads, quotations]);
 
   const unreadCount = notifications.filter(n => !readIds.includes(n.id)).length;
 
@@ -153,8 +134,6 @@ export const NotificationCenter: React.FC = () => {
 
   const getIcon = (type: NotificationItem['type']) => {
     switch (type) {
-      case 'overdue_invoice':
-        return <Receipt className="w-4 h-4 text-rose-600" />;
       case 'duplicate_leads':
         return <AlertTriangle className="w-4 h-4 text-amber-600" />;
       case 'new_lead':
@@ -211,7 +190,7 @@ export const NotificationCenter: React.FC = () => {
                 <CheckCircle2 className="w-8 h-8 text-emerald-500 mx-auto mb-2" />
                 <p className="text-xs font-bold text-slate-800">All caught up!</p>
                 <p className="text-[11px] text-slate-400 mt-0.5">
-                  No overdue invoices, duplicate leads, or pending alerts.
+                  No duplicate leads or pending alerts.
                 </p>
               </div>
             ) : (

@@ -4,7 +4,6 @@ import { useCRM } from '@/context/CRMContext';
 import {
   Search,
   Filter,
-  Receipt,
   FileText,
   Users,
   LayoutDashboard,
@@ -26,7 +25,7 @@ interface CommandPaletteProps {
 
 interface CommandItem {
   id: string;
-  category: 'Actions' | 'Navigation' | 'Leads' | 'Invoices' | 'Clients' | 'Quotations';
+  category: 'Actions' | 'Navigation' | 'Leads' | 'Clients' | 'Quotations';
   title: string;
   subtitle?: string;
   icon: React.ReactNode;
@@ -37,7 +36,7 @@ interface CommandItem {
 
 export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
-  const { leads, clients, invoices, quotations } = useCRM();
+  const { leads, clients, quotations } = useCRM();
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -67,20 +66,6 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose 
       badgeColor: 'bg-blue-100 text-blue-800',
       action: () => {
         navigate('/leads?action=new');
-        onClose();
-      }
-    });
-
-    list.push({
-      id: 'act-new-invoice',
-      category: 'Actions',
-      title: 'Generate New Invoice',
-      subtitle: 'Issue milestone billing with price override & discounts',
-      icon: <Receipt className="w-4 h-4 text-emerald-600" />,
-      badge: 'Action',
-      badgeColor: 'bg-emerald-100 text-emerald-800',
-      action: () => {
-        navigate('/invoices?action=new');
         onClose();
       }
     });
@@ -143,7 +128,6 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose 
       { path: '/dashboard', label: 'Executive Dashboard', desc: 'KPIs, pipeline values, and revenue', icon: <LayoutDashboard className="w-4 h-4 text-blue-600" /> },
       { path: '/leads', label: 'Leads Pipeline & Kanban', desc: 'Track incoming inquiries and stages', icon: <Filter className="w-4 h-4 text-indigo-600" /> },
       { path: '/quotations', label: 'Quotations & Proposals', desc: 'Commercial price proposals', icon: <FileText className="w-4 h-4 text-purple-600" /> },
-      { path: '/invoices', label: 'Invoices & Billing', desc: 'Receivables and discount tracking', icon: <Receipt className="w-4 h-4 text-emerald-600" /> },
       { path: '/clients', label: 'Clients Directory', desc: 'Active customer accounts', icon: <Users className="w-4 h-4 text-cyan-600" /> },
       { path: '/sales', label: 'Sales Records Ledger', desc: 'Paid transactions and revenue history', icon: <CreditCard className="w-4 h-4 text-teal-600" /> },
       { path: '/settings', label: 'Settings & Preferences', desc: 'System configuration and preferences', icon: <Settings className="w-4 h-4 text-slate-600" /> }
@@ -203,40 +187,6 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose 
           });
         });
 
-      // Matching Invoices
-      invoices
-        .filter(
-          i =>
-            i.invoiceNumber.toLowerCase().includes(q) ||
-            i.clientName.toLowerCase().includes(q)
-        )
-        .slice(0, 5)
-        .forEach(i => {
-          list.push({
-            id: `inv-${i.id}`,
-            category: 'Invoices',
-            title: `${i.invoiceNumber} — ${i.clientName}`,
-            subtitle: `Total: PKR ${i.amount.toLocaleString()} · Due: ${i.dueDate}`,
-            icon: <Receipt className="w-4 h-4 text-emerald-500" />,
-            badge: i.status,
-            badgeColor:
-              i.status === 'Paid'
-                ? 'bg-emerald-100 text-emerald-800'
-                : i.status === 'Accepted'
-                ? 'bg-indigo-100 text-indigo-800'
-                : i.status === 'Sent'
-                ? 'bg-blue-100 text-blue-800'
-                : i.status === 'Draft'
-                ? 'bg-slate-100 text-slate-800'
-                : i.status === 'Declined' || i.status === 'Overdue'
-                ? 'bg-rose-100 text-rose-800'
-                : 'bg-amber-100 text-amber-800',
-            action: () => {
-              navigate(`/invoices?search=${encodeURIComponent(i.invoiceNumber)}`);
-              onClose();
-            }
-          });
-        });
 
       // Matching Quotations
       quotations
@@ -303,7 +253,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose 
         (item.subtitle && item.subtitle.toLowerCase().includes(q)) ||
         item.category.toLowerCase().includes(q)
     );
-  }, [leads, clients, invoices, quotations, query, navigate, onClose]);
+  }, [leads, clients, quotations, query, navigate, onClose]);
 
   // Handle keyboard navigation
   useEffect(() => {
@@ -364,7 +314,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose 
               setQuery(e.target.value);
               setSelectedIndex(0);
             }}
-            placeholder="Type a command, lead name, phone, invoice #, or client..."
+            placeholder="Type a command, lead name, phone, quote #, or client..."
             className="w-full bg-transparent border-0 px-3 py-1 text-sm sm:text-base text-slate-800 placeholder-slate-400 focus:outline-hidden"
           />
           {query && (
@@ -390,7 +340,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose 
               <Sparkles className="w-8 h-8 text-slate-300 mx-auto mb-2" />
               <p className="text-sm font-semibold text-slate-700">No matching results found</p>
               <p className="text-xs text-slate-400 mt-1">
-                Try searching by lead name, phone digits, invoice number (e.g. INV), or quotation
+                Try searching by lead name, phone digits, quotation number, or client
               </p>
             </div>
           ) : (
