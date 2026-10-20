@@ -526,51 +526,14 @@ export const INITIAL_QUOTATIONS: Quotation[] = [
 
 export const INITIAL_INVOICES: Invoice[] = [
   {
-    id: 'inv-12345',
-    invoiceNumber: '12345',
-    clientName: 'Ketut Susilo',
-    companyName: 'Ketut Susilo Studio',
-    clientEmail: 'hello@reallygreatsite.com',
-    clientPhone: '123-456-7890',
-    clientAddress: '123 Anywhere St., Any City',
-    service: 'Creative Agency Brand Identity & Web Development Suite',
-    currency: '$',
-    subtotal: 7650,
-    taxRate: 15,
-    taxAmount: 1148,
-    amount: 8798,
-    issueDate: '2022-06-25',
-    dueDate: '2022-07-25',
-    status: 'Paid',
-    bankName: 'Borcelle',
-    accountNumber: '123-456-7890',
-    companyBrandName: 'STUDIO SHODWE',
-    companySubtitle: 'CREATIVE AGENCY',
-    companyWebsite: 'REALLYGREATSITE.COM',
-    signatoryName: 'Henrietta Mitchell',
-    signatoryTitle: 'Administrator',
-    terms: 'Please send payment within 30 days of receiving this invoice. There will be 10% interest charge per month on late invoice.',
-    notes: 'Official Creative Agency invoice generated in USD.',
-    sections: [
-      { id: 'sec-1', title: 'Logo Design', qty: 5, price: 100, amount: 500 },
-      { id: 'sec-2', title: 'Website Design', qty: 2, price: 800, amount: 1600 },
-      { id: 'sec-3', title: 'Brand Design', qty: 3, price: 300, amount: 900 },
-      { id: 'sec-4', title: 'Banner Design', qty: 2, price: 300, amount: 600 },
-      { id: 'sec-5', title: 'Flyer Design', qty: 2, price: 400, amount: 800 },
-      { id: 'sec-6', title: 'Social Media Template', qty: 10, price: 50, amount: 500 },
-      { id: 'sec-7', title: 'Name Card', qty: 15, price: 25, amount: 750 },
-      { id: 'sec-8', title: 'Web Developer', qty: 2, price: 1000, amount: 2000 }
-    ]
-  },
-  {
     id: 'inv-1',
     invoiceNumber: 'INV-2025-101',
     clientName: 'Chloe Bennett',
     companyName: 'Strata Engineering Group',
     clientEmail: 'c.bennett@strataengineering.com.au',
     clientPhone: '+61 2 9876 5432',
-    clientAddress: 'Level 14, 201 Kent St, Sydney NSW 2000',
-    service: 'Cloud Infrastructure & Kubernetes Setup - Milestone 1',
+    clientAddress: 'Level 14, 201 Kent St, Sydney NSW 2000, Australia',
+    service: 'Cloud Infrastructure & Kubernetes Setup',
     amount: 28000,
     subtotal: 28000,
     taxRate: 0,
@@ -578,18 +541,15 @@ export const INITIAL_INVOICES: Invoice[] = [
     issueDate: '2025-10-01',
     dueDate: '2025-10-21',
     status: 'Paid',
+    paidDate: '2025-10-18',
+    paymentMethod: 'Bank Wire Transfer',
     bankName: 'Meezan Bank Ltd',
     accountNumber: '0102-0105829101',
-    signatoryName: 'Henrietta Mitchell',
-    signatoryTitle: 'Administrator',
-    companyBrandName: 'STUDIO SHODWE',
-    companySubtitle: 'CREATIVE AGENCY',
-    companyWebsite: 'REALLYGREATSITE.COM',
-    terms: 'Please send payment within 30 days of receiving this invoice. There will be 10% interest charge per month on late invoice.',
+    terms: 'Payment received in full. Thank you for partnering with Root 4 Tech.',
     notes: 'Paid in full via international bank wire.',
     sections: [
-      { id: 's-101-1', title: 'Cloud Infrastructure & VPC Setup', qty: 1, price: 15000, amount: 15000 },
-      { id: 's-101-2', title: 'Kubernetes Cluster & Ingress Routing', qty: 1, price: 13000, amount: 13000 }
+      { id: 's-101-1', title: 'Cloud Infrastructure & VPC Setup', description: 'Multi-region AWS VPC networking and security groups', qty: 1, price: 15000, amount: 15000 },
+      { id: 's-101-2', title: 'Kubernetes Cluster & Ingress Routing', description: 'EKS cluster provisioning with automated deployment manifests', qty: 1, price: 13000, amount: 13000 }
     ]
   },
   {
@@ -598,16 +558,29 @@ export const INITIAL_INVOICES: Invoice[] = [
     clientName: 'Tariq Mansour',
     companyName: 'Aura Payment Solutions',
     clientEmail: 'tariq@aurapayments.ae',
+    clientPhone: '+971 50 123 4567',
+    clientAddress: 'Business Bay, Tower 4, Suite 802, Dubai, UAE',
     service: 'Payment Processing Gateway Architecture',
     subtotal: 40000,
     discountType: 'fixed',
     discountValue: 5000,
     discountAmount: 5000,
+    taxRate: 0,
+    taxAmount: 0,
     amount: 35000,
     issueDate: '2025-10-05',
     dueDate: '2025-10-25',
     status: 'Paid',
-    notes: 'Direct wire transfer received (PKR 5,000 corporate discount applied).'
+    paidDate: '2025-10-22',
+    paymentMethod: 'Direct Wire Transfer',
+    bankName: 'Meezan Bank Ltd',
+    accountNumber: '0102-0105829101',
+    terms: 'Net-20 payment terms honored. Thank you for your business.',
+    notes: 'Direct wire transfer received (PKR 5,000 corporate partner discount applied).',
+    sections: [
+      { id: 's-102-1', title: 'Payment Gateway API Integration', description: 'RESTful webhook handlers with idempotency key enforcement', qty: 1, price: 25000, amount: 25000 },
+      { id: 's-102-2', title: 'PCI-DSS Compliance Hardening', description: 'Tokenization layer and sensitive data masking architecture', qty: 1, price: 15000, amount: 15000 }
+    ]
   },
   {
     id: 'inv-3',
@@ -615,16 +588,27 @@ export const INITIAL_INVOICES: Invoice[] = [
     clientName: 'Julian Gomez',
     companyName: 'Solaris Clean Energy',
     clientEmail: 'julian@solarisclean.com',
+    clientPhone: '+1 (555) 789-0123',
+    clientAddress: '450 Innovation Parkway, Suite 300, Austin TX 78701, USA',
     service: 'IoT Solar Telemetry Portal Sprint 2',
     subtotal: 16000,
     discountType: 'percentage',
     discountValue: 10,
     discountAmount: 1600,
+    taxRate: 0,
+    taxAmount: 0,
     amount: 14400,
     issueDate: '2025-10-09',
     dueDate: '2025-10-30',
     status: 'Unpaid',
-    notes: 'Sent to accounts payable, awaiting net-21 payment (10% partner discount applied).'
+    bankName: 'Meezan Bank Ltd',
+    accountNumber: '0102-0105829101',
+    terms: 'Payment due within 21 days of issue date.',
+    notes: 'Sent to accounts payable, awaiting net-21 payment (10% partner discount applied).',
+    sections: [
+      { id: 's-103-1', title: 'Telemetry Data Ingestion Pipeline', description: 'MQTT broker setup with real-time stream processing', qty: 1, price: 9000, amount: 9000 },
+      { id: 's-103-2', title: 'Inverter Diagnostics Dashboard', description: 'Interactive time-series charts and solar array status gauges', qty: 1, price: 7000, amount: 7000 }
+    ]
   },
   {
     id: 'inv-4',
@@ -632,12 +616,23 @@ export const INITIAL_INVOICES: Invoice[] = [
     clientName: 'Dr. Rachel Kim',
     companyName: 'Northstar Genomics',
     clientEmail: 'r.kim@northstargenomics.com',
+    clientPhone: '+1 (555) 345-8910',
+    clientAddress: '88 BioTech Way, Cambridge MA 02142, USA',
     service: 'Bioinformatics Workflow Engine UI',
+    subtotal: 18000,
+    taxRate: 0,
+    taxAmount: 0,
     amount: 18000,
     issueDate: '2025-09-15',
     dueDate: '2025-10-05',
     status: 'Overdue',
-    notes: 'Follow-up email sent regarding pending balance.'
+    bankName: 'Meezan Bank Ltd',
+    accountNumber: '0102-0105829101',
+    terms: 'Overdue invoice. Standard late fee of 2% per month applies on delayed balances.',
+    notes: 'Follow-up email sent regarding pending balance.',
+    sections: [
+      { id: 's-104-1', title: 'Genome Pipeline Execution Interface', description: 'Nextflow task monitor and visual DAG execution viewer', qty: 1, price: 18000, amount: 18000 }
+    ]
   },
   {
     id: 'inv-5',
@@ -645,12 +640,49 @@ export const INITIAL_INVOICES: Invoice[] = [
     clientName: 'Martin Vance',
     companyName: 'Cascade Digital Ventures',
     clientEmail: 'mvance@cascadedigital.io',
+    clientPhone: '+44 20 7946 0912',
+    clientAddress: '100 Bishopsgate, Level 18, London EC2N 4AG, UK',
     service: 'Venture Analytics Dashboard Deliverable',
+    subtotal: 22500,
+    taxRate: 0,
+    taxAmount: 0,
     amount: 22500,
     issueDate: '2025-10-12',
     dueDate: '2025-11-02',
     status: 'Unpaid',
-    notes: 'Scheduled for bi-weekly billing cycle.'
+    bankName: 'Meezan Bank Ltd',
+    accountNumber: '0102-0105829101',
+    terms: 'Payment due within 21 days of issue date.',
+    notes: 'Scheduled for bi-weekly billing cycle.',
+    sections: [
+      { id: 's-105-1', title: 'Portfolio Metrics API Service', description: 'Unified data connector for portfolio company valuation reporting', qty: 1, price: 12500, amount: 12500 },
+      { id: 's-105-2', title: 'LP Executive Reporting Suite', description: 'Automated quarterly PDF generator and investor KPI dashboard', qty: 1, price: 10000, amount: 10000 }
+    ]
+  },
+  {
+    id: 'inv-6',
+    invoiceNumber: 'INV-2025-106',
+    clientName: 'Siddharth Nair',
+    companyName: 'Apex Global Logistics',
+    clientEmail: 's.nair@apexlogistics.sg',
+    clientPhone: '+65 6789 0123',
+    clientAddress: '71 Robinson Road, #14-01, Singapore 068895',
+    service: 'Freight Rate Optimization Platform',
+    subtotal: 45000,
+    taxRate: 0,
+    taxAmount: 0,
+    amount: 45000,
+    issueDate: '2025-10-18',
+    dueDate: '2025-11-08',
+    status: 'Draft',
+    bankName: 'Meezan Bank Ltd',
+    accountNumber: '0102-0105829101',
+    terms: 'Draft estimate pending final deliverable scope verification.',
+    notes: 'Draft proposal prepared for upcoming steering committee review.',
+    sections: [
+      { id: 's-106-1', title: 'Container Route Optimizer Algorithm', description: 'Multi-modal shipping routing engine with real-time fuel cost weighting', qty: 1, price: 30000, amount: 30000 },
+      { id: 's-106-2', title: 'Customs Clearance Integration Engine', description: 'Single-window documentation automation for customs declarations', qty: 1, price: 15000, amount: 15000 }
+    ]
   }
 ];
 
