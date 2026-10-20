@@ -6,6 +6,7 @@ import {
   Users,
   UserCheck,
   FileText,
+  Receipt,
   BadgeDollarSign,
   Settings,
   ChevronLeft,
@@ -35,7 +36,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onMobileClose,
 }) => {
   const navigate = useNavigate();
-  const { leads, clients, quotations } = useCRM();
+  const { leads, clients, quotations, invoices } = useCRM();
   const { user, users, logout } = useAuth();
 
   // React effect state: tracks hovered item for tooltips & micro-interactions
@@ -70,6 +71,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
       icon: FileText, 
       count: quotations.length, 
       badgeColor: 'bg-purple-100 text-purple-950 border-purple-200 shadow-xs font-extrabold' 
+    },
+    { 
+      label: 'Invoices', 
+      path: '/invoices', 
+      icon: Receipt, 
+      count: invoices.length > 0 ? invoices.length : undefined, 
+      badgeColor: 'bg-amber-100 text-amber-950 border-amber-200 shadow-xs font-extrabold' 
     },
     { label: 'Sales Records', path: '/sales', icon: BadgeDollarSign },
     { label: 'Settings', path: '/settings', icon: Settings },

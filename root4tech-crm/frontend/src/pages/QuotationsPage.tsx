@@ -1023,13 +1023,6 @@ export const QuotationsPage: React.FC = () => {
                   <div className="text-xs font-mono font-bold text-slate-900 mt-1">
                     {viewingQuote.quoteNumber}
                   </div>
-                  <span
-                    className={`inline-block mt-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${getStatusBadge(
-                      viewingQuote.status
-                    )}`}
-                  >
-                    {viewingQuote.status}
-                  </span>
                 </div>
               </div>
 

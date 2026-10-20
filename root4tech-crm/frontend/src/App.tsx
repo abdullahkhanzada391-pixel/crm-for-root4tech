@@ -9,6 +9,7 @@ import { DashboardPage } from '@/pages/DashboardPage';
 import { LeadsPage } from '@/pages/LeadsPage';
 import { ClientsPage } from '@/pages/ClientsPage';
 import { QuotationsPage } from '@/pages/QuotationsPage';
+import { InvoicesPage } from '@/pages/InvoicesPage';
 import { SalesRecordsPage } from '@/pages/SalesRecordsPage';
 import { SettingsPage } from '@/pages/SettingsPage';
 import { TeamPage } from '@/pages/TeamPage';
@@ -61,7 +62,7 @@ export const App: React.FC = () => {
             <Route path="/team" element={<TeamPage />} />
             <Route path="/team-members" element={<Navigate to="/team" replace />} />
             <Route path="/quotations" element={<QuotationsPage />} />
-            <Route path="/invoices" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/invoices" element={<InvoicesPage />} />
             <Route path="/sales" element={<SalesRecordsPage />} />
             <Route path="/settings" element={<SettingsPage />} />
 

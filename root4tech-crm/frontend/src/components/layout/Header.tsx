@@ -35,6 +35,8 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileMenu }) => {
         return { title: 'Clients Management', subtitle: 'Active customer accounts and contracts' };
       case '/quotations':
         return { title: 'Quotations', subtitle: 'Manage commercial price estimates and proposals' };
+      case '/invoices':
+        return { title: 'Invoices', subtitle: 'Official Root 4 Tech commercial billing and client statements' };
       case '/sales':
         return { title: 'Sales Records', subtitle: 'Historical completed transactions and revenue ledger' };
       case '/settings':
