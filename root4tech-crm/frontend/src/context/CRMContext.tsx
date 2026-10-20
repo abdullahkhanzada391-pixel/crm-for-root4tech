@@ -128,8 +128,8 @@ export const CRMProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (saved) {
       try {
         const parsed: Invoice[] = JSON.parse(saved);
-        if (Array.isArray(parsed)) {
-          return parsed.filter((i) => i.id !== 'inv-12345' && i.invoiceNumber !== '12345');
+        if (Array.isArray(parsed) && !parsed.some((i) => i.id === 'inv-12345' || i.invoiceNumber === '12345')) {
+          return [INITIAL_INVOICES[0], ...parsed];
         }
         return parsed;
       } catch {
